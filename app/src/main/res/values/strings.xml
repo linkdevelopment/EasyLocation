@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LocationSample-Kotlin_android</string>
+    <string name="action_settings">Settings</string>
+</resources>
