@@ -5,7 +5,7 @@ import android.location.LocationManager;
 import com.google.android.gms.location.LocationRequest;
 
 /**
- * Created by Sherif.ElNady on 7/10/2018.
+ * Created by Mohammed Fareed on 30/5/2019.
  */
 
 public class LocationHelper {

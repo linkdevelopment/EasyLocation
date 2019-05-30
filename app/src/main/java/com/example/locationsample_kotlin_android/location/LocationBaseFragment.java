@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.provider.Settings;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import com.example.locationsample_kotlin_android.R;
 import com.example.locationsample_kotlin_android.utils.UIUtils;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -19,7 +20,7 @@ import com.google.android.gms.tasks.Task;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Created by Sherif.ElNady on 8/17/2016.
+ * Created by Mohammed Fareed on 30/5/2019.
  */
 public abstract class LocationBaseFragment extends Fragment {
     private Context mContext;

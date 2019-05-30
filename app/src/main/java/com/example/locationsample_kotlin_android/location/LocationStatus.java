@@ -4,7 +4,7 @@ import android.location.Location;
 import androidx.annotation.NonNull;
 
 /**
- * Created by Sherif.ElNady on 10/2/2018.
+ * Created by Mohammed Fareed on 30/5/2019.
  */
 
 public class LocationStatus {
@@ -21,7 +21,6 @@ public class LocationStatus {
         this.status = status;
     }
 
-    ////// exposed Constructors
     @NonNull
     public static LocationStatus locationPermissionNotGranted() {
         return new LocationStatus(Status.PERMISSION_NOT_GRANTED);
