@@ -10,7 +10,19 @@ import com.google.android.gms.location.LocationRequest;
 
 public class LocationHelper {
 
-    public static boolean isLocationEnabled(Context context) {
+    public enum LocationError {
+        LOCATION_PERMISSION_DENIED,
+        LOCATION_SETTING_DENIED,
+        SHOULD_SHOW_RATIONAL,
+    }
+
+    public class Constants {
+        public static final long INTERVAL = 10000;
+        public static final long FASTEST_INTERVAL = 5000;
+        public static final long MAX_LOCATION_REQUEST_TIME = 15000;
+    }
+
+    static boolean isLocationEnabled(Context context) {
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
 
@@ -22,7 +34,7 @@ public class LocationHelper {
         return gps_enabled;
     }
 
-    public static LocationRequest createLocationRequest(long interval, long fastestInterval) {
+    static LocationRequest createLocationRequest(long interval, long fastestInterval) {
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setInterval(interval);
         mLocationRequest.setFastestInterval(fastestInterval);

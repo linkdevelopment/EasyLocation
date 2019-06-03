@@ -74,12 +74,12 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
     }
 
     @Override
-    public void onLocationSuccess(Location location) {
+    public void onLocationRetrieved(Location location) {
         mLocationResponseLiveData.setValue(LocationStatus.success(location));
     }
 
     @Override
-    public void onLocationError(LocationStatus locationStatus) {
+    public void onLocationRetrieveError(LocationStatus locationStatus) {
         mLocationResponseLiveData.setValue(locationStatus);
     }
 
@@ -114,9 +114,4 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
             }
         }
     };
-
-    public enum LocationProviderType {
-        NETWORK_PROVIDER,
-        FUSED_PROVIDER,
-    }
 }

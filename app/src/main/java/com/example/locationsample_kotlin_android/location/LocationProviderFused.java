@@ -7,7 +7,12 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import androidx.core.app.ActivityCompat;
-import com.google.android.gms.location.*;
+import androidx.core.content.ContextCompat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 
 class LocationProviderFused implements LocationProvidersContract {
     private Context mContext;
@@ -39,20 +44,20 @@ class LocationProviderFused implements LocationProvidersContract {
     @Override
     public void fetchLatestKnownLocation() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        if (mContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                mContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), true));
             if (location != null)
                 onLocationRetrieved(location);
             else
-                mLocationStatusListener.onLocationError(LocationStatus.error());
+                mLocationStatusListener.onLocationRetrieveError(LocationStatus.error());
         } else {
-            mLocationStatusListener.onLocationError(LocationStatus.locationPermissionNotGranted());
+            mLocationStatusListener.onLocationRetrieveError(LocationStatus.locationPermissionNotGranted());
         }
     }
 
     private void onLocationRetrieved(Location location) {
-        mLocationStatusListener.onLocationSuccess(location);
+        mLocationStatusListener.onLocationRetrieved(location);
     }
 
     private void requestLocationUpdates(LocationRequest locationRequest) {
@@ -66,7 +71,7 @@ class LocationProviderFused implements LocationProvidersContract {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult == null) {
-                mLocationStatusListener.onLocationError(LocationStatus.error());
+                mLocationStatusListener.onLocationRetrieveError(LocationStatus.error());
                 return;
             }
             onLocationRetrieved(locationResult.getLastLocation());

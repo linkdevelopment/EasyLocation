@@ -8,13 +8,18 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import com.example.locationsample_kotlin_android.R;
-import com.example.locationsample_kotlin_android.utils.UIUtils;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.*;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.Task;
 
 import static android.app.Activity.RESULT_OK;
@@ -22,31 +27,49 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Created by Mohammed Fareed on 30/5/2019.
  */
-public abstract class LocationBaseFragment extends Fragment {
-    private Context mContext;
+public abstract class BaseLocationFragment extends Fragment {
+    public static final String TAG = "BaseLocationFragment";
 
     private static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_CODE_LOCATION_SETTINGS = 2000;
 
-    public abstract void onLocationPermissionGranted();
+    /**
+     * Called when both LocationPermission and locationSetting are granted.
+     */
+    public abstract void onLocationReady();
 
-    public abstract void onLocationPermissionDenied();
+    public abstract void onLocationError(LocationHelper.LocationError locationError);
 
-    public abstract void onLocationSettingGranted();
+    /**
+     * Checks both location permission and settings are granted.
+     */
+    protected void checkLocationReady() {
+        checkLocationPermissions(getActivity());
+    }
 
-    public abstract void onLocationSettingDenied();
+    protected void onLocationPermissionGranted() {
+        Log.d(TAG, "onLocationPermissionGranted: ");
+        checkLocationSettings(getActivity());
+    }
+
+    protected void onLocationPermissionDenied() {
+        onLocationError(LocationHelper.LocationError.LOCATION_PERMISSION_DENIED);
+    }
+
+    private void onLocationSettingGranted() {
+        onLocationReady();
+    }
+
+    private void onLocationSettingDenied() {
+        onLocationError(LocationHelper.LocationError.LOCATION_SETTING_DENIED);
+    }
 
     //* Location Permission *//
-    protected void checkLocationPermissions(Context context) {
-        mContext = context;
+    private void checkLocationPermissions(Context context) {
         if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            UIUtils.showBasicDialog(mContext, null, getString(R.string.nearby_location_permission_message),
-                    getString(R.string.grant_permission), getString(R.string.cancel),
-                    this::onLocationPermissionDialogInteraction,
-                    this::onLocationPermissionDialogInteraction)
-                    .setOnCancelListener(dialog -> onLocationPermissionDialogInteraction(dialog, DialogInterface.BUTTON_NEGATIVE));
-        } else if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // show dialog in case the user had already clicked deny before to redirect to settings
+            onLocationError(LocationHelper.LocationError.SHOULD_SHOW_RATIONAL);
+        } else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_COARSE_LOCATION);
         } else {
@@ -55,44 +78,22 @@ public abstract class LocationBaseFragment extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_COARSE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    onLocationPermissionGranted();
-                } else {
-                    onLocationPermissionDenied();
-                }
-                break;
-            }
-        }
-    }
-
-    private void onLocationPermissionDialogInteraction(DialogInterface dialogInterface, int which) {
-        switch (which) {
-            case DialogInterface.BUTTON_POSITIVE: {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", mContext.getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-                break;
-            }
-            default:
-            case DialogInterface.BUTTON_NEGATIVE: {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_COARSE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onLocationPermissionGranted();
+            } else {
                 onLocationPermissionDenied();
-                break;
             }
         }
     }
 
     //* Location Setting *//
-    protected void checkLocationSettings(Context context) {
-        mContext = context;
-        LocationRequest locationRequest = LocationHelper.createLocationRequest(Constants.LocationConstants.INTERVAL,
-                Constants.LocationConstants.FASTEST_INTERVAL);
+    private void checkLocationSettings(Context context) {
+        LocationRequest locationRequest = LocationHelper.createLocationRequest(LocationHelper.Constants.INTERVAL,
+                LocationHelper.Constants.FASTEST_INTERVAL);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
-        Task<LocationSettingsResponse> task = LocationServices.getSettingsClient(mContext).checkLocationSettings(builder.build());
+        Task<LocationSettingsResponse> task = LocationServices.getSettingsClient(context).checkLocationSettings(builder.build());
         task.addOnCompleteListener(task1 -> {
             try {
                 // All location settings are satisfied. The client can initialize location requests here.
@@ -104,7 +105,7 @@ public abstract class LocationBaseFragment extends Fragment {
                         // Location settings are not satisfied. But could be fixed by showing the user a dialog.
                         try {
                             ResolvableApiException resolvable = (ResolvableApiException) exception;
-                            requestLocationSetting(mContext, resolvable);
+                            requestLocationSetting(context, resolvable);
                         } catch (ClassCastException e) {
                             e.printStackTrace();
                             onLocationSettingDenied();
@@ -119,7 +120,6 @@ public abstract class LocationBaseFragment extends Fragment {
     }
 
     private void requestLocationSetting(Context context, ResolvableApiException resolvable) {
-        mContext = context;
         try {
             startIntentSenderForResult(resolvable.getResolution().getIntentSender(), REQUEST_CODE_LOCATION_SETTINGS, null, 0, 0, 0, null);
         } catch (IntentSender.SendIntentException e) {
@@ -133,7 +133,7 @@ public abstract class LocationBaseFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
             if (resultCode == RESULT_OK) {
-                if (!LocationHelper.isLocationEnabled(mContext)) {
+                if (!LocationHelper.isLocationEnabled(getActivity())) {
                     onLocationSettingDenied();
                 } else {
                     onLocationSettingGranted();

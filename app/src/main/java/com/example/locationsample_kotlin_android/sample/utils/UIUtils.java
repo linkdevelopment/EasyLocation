@@ -1,15 +1,7 @@
-package com.example.locationsample_kotlin_android.utils;
+package com.example.locationsample_kotlin_android.sample.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.os.Build;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.WindowManager;
-import android.webkit.WebView;
-import android.widget.PopupWindow;
 import androidx.appcompat.app.AlertDialog;
 
 

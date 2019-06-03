@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import androidx.core.content.ContextCompat;
 
 class LocationProviderNetwork implements LocationProvidersContract {
 
@@ -23,9 +24,9 @@ class LocationProviderNetwork implements LocationProvidersContract {
 
     @Override
     public void requestLocationUpdates() {
-        if (mContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                mContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mLocationStatusListener.onLocationError(LocationStatus.locationPermissionNotGranted());
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mLocationStatusListener.onLocationRetrieveError(LocationStatus.locationPermissionNotGranted());
             return;
         }
 
@@ -40,20 +41,20 @@ class LocationProviderNetwork implements LocationProvidersContract {
 
     @Override
     public void fetchLatestKnownLocation() {
-        if (mContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                mContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (location != null)
                 onLocationRetrieved(location);
             else
-                mLocationStatusListener.onLocationError(LocationStatus.error());
+                mLocationStatusListener.onLocationRetrieveError(LocationStatus.error());
         } else {
-            mLocationStatusListener.onLocationError(LocationStatus.locationPermissionNotGranted());
+            mLocationStatusListener.onLocationRetrieveError(LocationStatus.locationPermissionNotGranted());
         }
     }
 
     private void onLocationRetrieved(Location location) {
-        mLocationStatusListener.onLocationSuccess(location);
+        mLocationStatusListener.onLocationRetrieved(location);
     }
 
     private LocationListener mLocationListener = new LocationListener() {
