@@ -61,11 +61,12 @@ public class SampleLocationFragment extends BaseLocationFragment {
     @Override
     public void onLocationReady() {
         mLocationLifecycleObserver =
-                new LocationLifecycleObserver(mContext, this, LocationHelper.Constants.MAX_LOCATION_REQUEST_TIME);
+                new LocationLifecycleObserver(mContext, LocationHelper.Constants.MAX_LOCATION_REQUEST_TIME);
+        getLifecycle().addObserver(mLocationLifecycleObserver);
 
-//        mLocationLifecycleObserver.startNetworkLocationUpdates();
-        mLocationLifecycleObserver.startFusedLocationUpdates(LocationHelper.Constants.INTERVAL, LocationHelper.Constants.FASTEST_INTERVAL);
-        mLocationLifecycleObserver.getLocationResponseLiveData().observe(this, this::onLocationRetrieved);
+//        mLocationLifecycleObserver.startNetworkLocationUpdates()
+        mLocationLifecycleObserver.startFusedLocationUpdates(LocationHelper.Constants.INTERVAL, LocationHelper.Constants.FASTEST_INTERVAL)
+                .observe(this, this::onLocationRetrieved);
     }
 
     @Override

@@ -11,7 +11,7 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
 
     private static final int DEFAULT_MAX_LOCATION_REQUEST_TIME = 15000;
 
-    private LifecycleOwner mLifecycleOwner;
+    private boolean mSingleLocationRequest = false;
     private Handler mLocationRequestTimeoutHandler;
 
     private LocationProvidersContract mLocationProvidersContract;
@@ -21,15 +21,21 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
     private boolean mIsFetchLatestKnownLocation = false;
 
     /**
+     * @param singleLocationRequest should listen for the location change only oneTime.
+     */
+    public LocationLifecycleObserver(Context context, boolean singleLocationRequest) {
+        this(context, null);
+        mSingleLocationRequest = singleLocationRequest;
+    }
+
+    /**
      * @param context
-     * @param lifecycleOwner
      * @param maxLocationRequestTime Sets the max location updates request time
      *                               if exceeded stops the location updates and returns error
      *                               set to Null for default time {#LocationLifecycleObserver.DEFAULT_MAX_LOCATION_REQUEST_TIME}.
      */
-    public LocationLifecycleObserver(Context context, LifecycleOwner lifecycleOwner, @Nullable Long maxLocationRequestTime) {
+    public LocationLifecycleObserver(Context context, @Nullable Long maxLocationRequestTime) {
         this.mContext = context;
-        mLifecycleOwner = lifecycleOwner;
         if (maxLocationRequestTime != null)
             mMaxLocationRequestTime = maxLocationRequestTime;
         mLocationResponseLiveData = new MutableLiveData<>();
@@ -40,27 +46,26 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
         stopLocationUpdates();
     }
 
-    public MutableLiveData<LocationStatus> getLocationResponseLiveData() {
+    /**
+     * createsLocationRequest
+     */
+    public MutableLiveData<LocationStatus> startNetworkLocationUpdates() {
+        startLocationRequestTimer();
+        createNetworkLocationRequest();
         return mLocationResponseLiveData;
     }
 
     /**
-     * createsLocationRequest
-     */
-    public void startNetworkLocationUpdates() {
-        startLocationRequestTimer();
-        createNetworkLocationRequest();
-    }
-
-    /**
-     * createsLocationRequest
+     * Creates location updates
      *
      * @param interval
      * @param fastestInterval
+     * @return
      */
-    public void startFusedLocationUpdates(long interval, long fastestInterval) {
+    public MutableLiveData<LocationStatus> startFusedLocationUpdates(long interval, long fastestInterval) {
         startLocationRequestTimer();
         createFusedLocationRequest(interval, fastestInterval);
+        return mLocationResponseLiveData;
     }
 
     private void createFusedLocationRequest(long interval, long fastestInterval) {
