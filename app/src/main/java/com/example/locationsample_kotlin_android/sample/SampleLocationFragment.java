@@ -61,7 +61,8 @@ public class SampleLocationFragment extends BaseLocationFragment {
     @Override
     public void onLocationReady() {
         mLocationLifecycleObserver =
-                new LocationLifecycleObserver(mContext, LocationHelper.Constants.MAX_LOCATION_REQUEST_TIME);
+                new LocationLifecycleObserver(mContext, LocationHelper.Constants.MAX_LOCATION_REQUEST_TIME)
+                        .singleLocationRequest();
         getLifecycle().addObserver(mLocationLifecycleObserver);
 
 //        mLocationLifecycleObserver.startNetworkLocationUpdates()
@@ -70,7 +71,7 @@ public class SampleLocationFragment extends BaseLocationFragment {
     }
 
     @Override
-    public void onLocationError(LocationHelper.LocationError locationError) {
+    public void onLocationReadyError(LocationHelper.LocationError locationError) {
         switch (locationError) {
             case SHOULD_SHOW_RATIONAL:
                 UIUtils.showBasicDialog(mContext, null, getString(R.string.nearby_location_permission_message),

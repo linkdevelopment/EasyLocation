@@ -11,7 +11,7 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
 
     private static final int DEFAULT_MAX_LOCATION_REQUEST_TIME = 15000;
 
-    private boolean mSingleLocationRequest = false;
+    private boolean mIsSingleLocationRequest = false;
     private Handler mLocationRequestTimeoutHandler;
 
     private LocationProvidersContract mLocationProvidersContract;
@@ -19,14 +19,6 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
     private MutableLiveData<LocationStatus> mLocationResponseLiveData;
     private long mMaxLocationRequestTime = DEFAULT_MAX_LOCATION_REQUEST_TIME;
     private boolean mIsFetchLatestKnownLocation = false;
-
-    /**
-     * @param singleLocationRequest should listen for the location change only oneTime.
-     */
-    public LocationLifecycleObserver(Context context, boolean singleLocationRequest) {
-        this(context, null);
-        mSingleLocationRequest = singleLocationRequest;
-    }
 
     /**
      * @param context
@@ -41,16 +33,24 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
         mLocationResponseLiveData = new MutableLiveData<>();
     }
 
+    public LocationLifecycleObserver singleLocationRequest() {
+        mIsSingleLocationRequest = true;
+        return this;
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     void onDestroy() {
         stopLocationUpdates();
     }
 
     /**
-     * createsLocationRequest
+     * creates Location Request
+     *
+     * @return
      */
     public MutableLiveData<LocationStatus> startNetworkLocationUpdates() {
-        startLocationRequestTimer();
+        if (mIsSingleLocationRequest)
+            startLocationRequestTimer();
         createNetworkLocationRequest();
         return mLocationResponseLiveData;
     }
@@ -63,37 +63,24 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
      * @return
      */
     public MutableLiveData<LocationStatus> startFusedLocationUpdates(long interval, long fastestInterval) {
-        startLocationRequestTimer();
+        if (mIsSingleLocationRequest)
+            startLocationRequestTimer();
         createFusedLocationRequest(interval, fastestInterval);
         return mLocationResponseLiveData;
     }
 
-    private void createFusedLocationRequest(long interval, long fastestInterval) {
-        mLocationProvidersContract = new LocationProviderFused(mContext, this, interval, fastestInterval);
-        mLocationProvidersContract.requestLocationUpdates();
-    }
-
-    private void createNetworkLocationRequest() {
-        mLocationProvidersContract = new LocationProviderNetwork(mContext, this);
-        mLocationProvidersContract.requestLocationUpdates();
-    }
-
     @Override
     public void onLocationRetrieved(Location location) {
+        if (mIsSingleLocationRequest)
+            stopLocationUpdates();
         mLocationResponseLiveData.setValue(LocationStatus.success(location));
     }
 
     @Override
     public void onLocationRetrieveError(LocationStatus locationStatus) {
+        if (mIsSingleLocationRequest)
+            stopLocationUpdates();
         mLocationResponseLiveData.setValue(locationStatus);
-    }
-
-    public void stopLocationUpdates() {
-        if (mLocationProvidersContract != null)
-            mLocationProvidersContract.stopLocationUpdates();
-
-        if (mLocationRequestTimeoutHandler != null && runnable != null)
-            mLocationRequestTimeoutHandler.removeCallbacks(runnable);
     }
 
     /**
@@ -119,4 +106,26 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
             }
         }
     };
+
+    public void setSingleLocationRequest(boolean isSingleLocationRequest) {
+        mIsSingleLocationRequest = isSingleLocationRequest;
+    }
+
+    private void createFusedLocationRequest(long interval, long fastestInterval) {
+        mLocationProvidersContract = new LocationProviderFused(mContext, this, interval, fastestInterval);
+        mLocationProvidersContract.requestLocationUpdates();
+    }
+
+    private void createNetworkLocationRequest() {
+        mLocationProvidersContract = new LocationProviderNetwork(mContext, this);
+        mLocationProvidersContract.requestLocationUpdates();
+    }
+
+    public void stopLocationUpdates() {
+        if (mLocationProvidersContract != null)
+            mLocationProvidersContract.stopLocationUpdates();
+
+        if (mLocationRequestTimeoutHandler != null && runnable != null)
+            mLocationRequestTimeoutHandler.removeCallbacks(runnable);
+    }
 }
