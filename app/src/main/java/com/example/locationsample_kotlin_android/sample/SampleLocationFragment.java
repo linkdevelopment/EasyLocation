@@ -27,7 +27,6 @@ public class SampleLocationFragment extends BaseLocationFragment {
     public static final String TAG = "SampleLocationFragment";
     private Context mContext;
 
-    private LocationSampleViewModel mViewModel;
 
     private TextView tvLocation;
     private LocationLifecycleObserver mLocationLifecycleObserver;
@@ -52,7 +51,6 @@ public class SampleLocationFragment extends BaseLocationFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mContext = getActivity();
-        mViewModel = ViewModelProviders.of(this).get(LocationSampleViewModel.class);
 
         checkLocationReady();
         tvLocation.setText("Retrieving ...");
