@@ -18,7 +18,6 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
 
     private MutableLiveData<LocationStatus> mLocationResponseLiveData;
     private long mMaxLocationRequestTime = DEFAULT_MAX_LOCATION_REQUEST_TIME;
-    private boolean mIsFetchLatestKnownLocation = false;
 
     /**
      * @param context
@@ -96,14 +95,7 @@ public class LocationLifecycleObserver implements LifecycleObserver, LocationSta
         public void run() {
             stopLocationUpdates();
 
-            if (mIsFetchLatestKnownLocation) {
-                mIsFetchLatestKnownLocation = false;
-                mLocationResponseLiveData.setValue(LocationStatus.error());
-            } else {
-                mIsFetchLatestKnownLocation = true;
-                startLocationRequestTimer();
-                mLocationProvidersContract.fetchLatestKnownLocation();
-            }
+            mLocationProvidersContract.fetchLatestKnownLocation();
         }
     };
 

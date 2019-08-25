@@ -7,7 +7,6 @@ import com.google.android.gms.location.LocationRequest;
 /**
  * Created by Mohammed Fareed on 30/5/2019.
  */
-
 public class LocationHelper {
 
     public enum LocationError {
