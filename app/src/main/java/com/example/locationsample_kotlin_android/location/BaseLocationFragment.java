@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
@@ -34,7 +36,7 @@ public abstract class BaseLocationFragment extends Fragment {
      */
     public abstract void onLocationReady();
 
-    public abstract void onLocationReadyError(LocationHelper.LocationError locationError);
+    public abstract void onLocationReadyError(LocationError locationError);
 
     /**
      * Checks both location permission and settings are granted.
@@ -49,7 +51,7 @@ public abstract class BaseLocationFragment extends Fragment {
     }
 
     protected void onLocationPermissionDenied() {
-        onLocationReadyError(LocationHelper.LocationError.LOCATION_PERMISSION_DENIED);
+        onLocationReadyError(LocationError.LOCATION_PERMISSION_DENIED);
     }
 
     private void onLocationSettingGranted() {
@@ -57,14 +59,14 @@ public abstract class BaseLocationFragment extends Fragment {
     }
 
     private void onLocationSettingDenied() {
-        onLocationReadyError(LocationHelper.LocationError.LOCATION_SETTING_DENIED);
+        onLocationReadyError(LocationError.LOCATION_SETTING_DENIED);
     }
 
     //* Location Permission *//
     private void checkLocationPermissions(Context context) {
         if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
             // show dialog in case the user had already clicked deny before to redirect to settings
-            onLocationReadyError(LocationHelper.LocationError.SHOULD_SHOW_RATIONAL);
+            onLocationReadyError(LocationError.SHOULD_SHOW_RATIONAL);
         } else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_COARSE_LOCATION);
@@ -86,8 +88,8 @@ public abstract class BaseLocationFragment extends Fragment {
 
     //* Location Setting *//
     private void checkLocationSettings(Context context) {
-        LocationRequest locationRequest = LocationHelper.createLocationRequest(LocationHelper.Constants.INTERVAL,
-                LocationHelper.Constants.FASTEST_INTERVAL);
+        LocationRequest locationRequest = LocationHelper.createLocationRequest(Constants.MIN_TIME,
+                Constants.FASTEST_INTERVAL);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
         Task<LocationSettingsResponse> task = LocationServices.getSettingsClient(context).checkLocationSettings(builder.build());
         task.addOnCompleteListener(task1 -> {
