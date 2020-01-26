@@ -6,24 +6,23 @@ import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.locationsample_kotlin_android.location.LocationStatus
 import com.example.locationsample_kotlin_android.location.location_providers.LocationProviders
 import com.example.locationsample_kotlin_android.location.location_providers.LocationStatusListener
 import com.google.android.gms.location.*
 
-internal class FusedLocationProvider(private val mContext: Context,
-                                     private val mLocationStatusListener: LocationStatusListener,
-                                     private val mInterval: Long, private val mSmallestDisplacement: Float) : LocationProviders {
+internal class FusedLocationProvider(private val mContext: Context, private val fusedLocationOptions: FusedLocationOptions) : LocationProviders {
 
+    private lateinit var mLocationStatusListener: LocationStatusListener
     private val mFusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext)
 
-    override fun requestLocationUpdates() {
-        val locationRequest = createLocationRequest(mInterval, mSmallestDisplacement)
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
+    override fun requestLocationUpdates(locationStatusListener: LocationStatusListener) {
+        mLocationStatusListener = locationStatusListener
+
+        val locationRequest = createLocationRequest(fusedLocationOptions.maxWaitTime,
+                fusedLocationOptions.smallestDisplacement, fusedLocationOptions.priority, fusedLocationOptions.fastestInterval)
+
         mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, null)
     }
 
@@ -65,11 +64,13 @@ internal class FusedLocationProvider(private val mContext: Context,
         }
     }
 
-    private fun createLocationRequest(interval: Long, smallestDisplacement: Float): LocationRequest {
+    private fun createLocationRequest(timeInterval: Long, smallestDisplacement: Float, priority: Int,
+                                      fastestInterval: Long): LocationRequest {
         return LocationRequest.create().apply {
-            this.interval = interval
+            this.maxWaitTime = timeInterval
             this.smallestDisplacement = smallestDisplacement
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            this.fastestInterval = fastestInterval
+            this.priority = priority
         }
     }
 }

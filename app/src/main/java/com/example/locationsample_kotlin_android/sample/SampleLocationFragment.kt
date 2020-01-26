@@ -15,6 +15,7 @@ import com.example.locationsample_kotlin_android.R
 import com.example.locationsample_kotlin_android.location.*
 import com.example.locationsample_kotlin_android.location.location_providers.LocationProvidersTypes
 import com.example.locationsample_kotlin_android.location.location_providers.fused.FusedLocationOptions
+import com.example.locationsample_kotlin_android.location.location_providers.network.NetworkLocationOptions
 import com.example.locationsample_kotlin_android.sample.utils.UIUtils
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 import java.util.*
@@ -46,14 +47,9 @@ class SampleLocationFragment : BaseLocationFragment() {
     }
 
     override fun onLocationReady() {
-        LocationObserver(lifecycle, mContext, Constants.MAX_LOCATION_REQUEST_TIME, true)
-                .requestLocationUpdates(LocationProvidersTypes.FUSED_LOCATION_PROVIDER, FusedLocationOptions())
+        LocationLifeCycleObserver(lifecycle, mContext, Constants.DEFAULT_MAX_LOCATION_REQUEST_TIME, false)
+                .requestLocationUpdates(LocationProvidersTypes.NETWORK_LOCATION_PROVIDER, NetworkLocationOptions())
                 .observe(this, Observer { onLocationRetrieved(it) })
-
-//        mLocationObserver.startNetworkLocationUpdates()
-//                .observe(this, Observer { onLocationRetrieved(it) })
-//        mLocationObserver.startFusedLocationUpdates(Constants.INTERVAL, Constants.FASTEST_INTERVAL)
-//                .observe(this, Observer { onLocationRetrieved(it) })
     }
 
     override fun onLocationReadyError(locationError: LocationError) {
@@ -63,10 +59,10 @@ class SampleLocationFragment : BaseLocationFragment() {
                         getString(R.string.grant_permission), getString(R.string.cancel),
                         { dialogInterface: DialogInterface, which: Int ->
                             onLocationPermissionDialogInteraction(dialogInterface, which)
-                        }, { dialogInterface: DialogInterface, which: Int ->
-                    onLocationPermissionDialogInteraction(dialogInterface, which)
-                })
-                        .setOnCancelListener { dialog: DialogInterface ->
+                        },
+                        { dialogInterface: DialogInterface, which: Int ->
+                            onLocationPermissionDialogInteraction(dialogInterface, which)
+                        }).setOnCancelListener { dialog: DialogInterface ->
                             onLocationPermissionDialogInteraction(dialog, DialogInterface.BUTTON_NEGATIVE)
                         }
             LocationError.LOCATION_SETTING_DENIED ->
@@ -90,9 +86,6 @@ class SampleLocationFragment : BaseLocationFragment() {
             DialogInterface.BUTTON_NEGATIVE -> {
                 onLocationPermissionDenied()
             }
-            else -> {
-                onLocationPermissionDenied()
-            }
         }
     }
 
@@ -100,19 +93,14 @@ class SampleLocationFragment : BaseLocationFragment() {
         when (locationStatus.status) {
             Status.SUCCESS -> {
                 Toast.makeText(mContext, "Location updated.", Toast.LENGTH_LONG).show()
-                val latLng = String.format(
-                        Locale.ENGLISH,
-                        "%f - %f",
-                        locationStatus.location?.latitude,
-                        locationStatus.location?.longitude
-                )
+                val latLng = String.format(Locale.ENGLISH, "%f - %f",
+                        locationStatus.location?.latitude, locationStatus.location?.longitude)
                 tvLocation!!.text = latLng
             }
             Status.ERROR ->
                 Toast.makeText(mContext, "Location retrieval error.", Toast.LENGTH_SHORT).show()
             Status.PERMISSION_NOT_GRANTED -> {
-                Toast.makeText(mContext, "Location permission not granted.", Toast.LENGTH_SHORT)
-                        .show()
+                Toast.makeText(mContext, "Location permission not granted.", Toast.LENGTH_SHORT).show()
                 checkLocationReady()
             }
         }

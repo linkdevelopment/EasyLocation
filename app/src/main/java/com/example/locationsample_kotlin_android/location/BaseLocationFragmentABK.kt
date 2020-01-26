@@ -1,20 +1,6 @@
 package com.example.locationsample_kotlin_android.location
 
-import android.Manifest
-import android.app.Activity.RESULT_OK
-import android.content.Context
-import android.content.Intent
-import android.content.IntentSender
-import android.location.Location
-import android.util.Log
-import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsStatusCodes
 
 /**
  * Created by Mohammed Fareed on 30/5/2019.

@@ -24,17 +24,13 @@ import com.example.locationsample_kotlin_android.location.location_providers.net
  *      @Default{#LocationLifecycleObserver.DEFAULT_MAX_LOCATION_REQUEST_TIME}.
  * @param mIsSingleLocationRequest todo
  */
-class LocationObserver(lifecycle: Lifecycle, private val mContext: Context,
-                       private var mMaxLocationRequestTime: Long = DEFAULT_MAX_LOCATION_REQUEST_TIME,
-                       private var mIsSingleLocationRequest: Boolean = false) : LifecycleObserver {
+class LocationLifeCycleObserver(lifecycle: Lifecycle, private val mContext: Context,
+                                private var mMaxLocationRequestTime: Long = Constants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
+                                private var mIsSingleLocationRequest: Boolean = false) : LifecycleObserver {
 
     private lateinit var mLocationProviders: LocationProviders
     private val mLocationResponseLiveData: MutableLiveData<LocationStatus> = MutableLiveData()
     private var mLocationRequestTimeoutHandler: Handler = Handler()
-
-    companion object {
-        private const val DEFAULT_MAX_LOCATION_REQUEST_TIME: Long = 15000
-    }
 
     init {
         lifecycle.addObserver(this)
@@ -45,9 +41,6 @@ class LocationObserver(lifecycle: Lifecycle, private val mContext: Context,
         stopLocationUpdates()
     }
 
-    /**
-     *
-     */
     fun requestLocationUpdates(locationProvidersTypes: LocationProvidersTypes, locationOptions: LocationOptions): MutableLiveData<LocationStatus> {
         return when (locationProvidersTypes) {
             LocationProvidersTypes.FUSED_LOCATION_PROVIDER -> {
@@ -73,7 +66,7 @@ class LocationObserver(lifecycle: Lifecycle, private val mContext: Context,
     private fun startNetworkLocationUpdates(networkLocationOptions: NetworkLocationOptions): MutableLiveData<LocationStatus> {
         if (mIsSingleLocationRequest)
             startLocationRequestTimer()
-        requestNetworkLocationUpdates(networkLocationOptions.)
+        requestNetworkLocationUpdates(networkLocationOptions)
         return mLocationResponseLiveData
     }
 
@@ -86,7 +79,7 @@ class LocationObserver(lifecycle: Lifecycle, private val mContext: Context,
     private fun startFusedLocationUpdates(fusedLocationOptions: FusedLocationOptions): MutableLiveData<LocationStatus> {
         if (mIsSingleLocationRequest)
             startLocationRequestTimer()
-        requestFusedLocationUpdates(fusedLocationOptions.minTime, fusedLocationOptions.smallestDisplacement)
+        requestFusedLocationUpdates(fusedLocationOptions)
         return mLocationResponseLiveData
     }
 
@@ -104,15 +97,14 @@ class LocationObserver(lifecycle: Lifecycle, private val mContext: Context,
         }
     }
 
-    private fun requestFusedLocationUpdates(interval: Long, smallestDisplacement: Float) {
-        mLocationProviders =
-                FusedLocationProvider(mContext, mLocationStatusListener, interval, smallestDisplacement)
-        mLocationProviders.requestLocationUpdates()
+    private fun requestFusedLocationUpdates(fusedLocationOptions: FusedLocationOptions) {
+        mLocationProviders = FusedLocationProvider(mContext, fusedLocationOptions)
+        mLocationProviders.requestLocationUpdates(mLocationStatusListener)
     }
 
-    private fun requestNetworkLocationUpdates(minTime: Long, minDistance: Float) {
-        mLocationProviders = NetworkLocationProvider(mContext, mLocationStatusListener, minTime, minDistance)
-        mLocationProviders.requestLocationUpdates()
+    private fun requestNetworkLocationUpdates(networkLocationOptions: NetworkLocationOptions) {
+        mLocationProviders = NetworkLocationProvider(mContext, networkLocationOptions)
+        mLocationProviders.requestLocationUpdates(mLocationStatusListener)
     }
 
     fun stopLocationUpdates() {

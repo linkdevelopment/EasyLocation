@@ -11,22 +11,22 @@ import androidx.core.content.ContextCompat
 import com.example.locationsample_kotlin_android.location.LocationStatus
 import com.example.locationsample_kotlin_android.location.location_providers.LocationProviders
 import com.example.locationsample_kotlin_android.location.location_providers.LocationStatusListener
-import com.google.android.gms.location.LocationRequest
 
-internal class NetworkLocationProvider(private val mContext: Context,
-                                       private val mLocationStatusListener: LocationStatusListener,
-                                       private val minTime: Long, private val minDistance: Float) : LocationProviders {
+internal class NetworkLocationProvider(private val mContext: Context, private val mNetworkLocationOptions: NetworkLocationOptions) : LocationProviders {
 
+    private lateinit var mLocationStatusListener: LocationStatusListener
     private val mLocationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    override fun requestLocationUpdates() {
+    override fun requestLocationUpdates(locationStatusListener: LocationStatusListener) {
+        mLocationStatusListener = locationStatusListener
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             mLocationStatusListener.onLocationRetrieveError(LocationStatus.LocationPermissionNotGranted())
             return
         }
 
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, mLocationListener)
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                mNetworkLocationOptions.maxWaitTime, mNetworkLocationOptions.minDistance, mLocationListener)
     }
 
     override fun stopLocationUpdates() {
