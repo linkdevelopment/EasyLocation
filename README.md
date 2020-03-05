@@ -1,7 +1,27 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+Working with location is one of the most common tasks in the development process of mobile apps.
+Therefore, questions about what to use to achieve more precise results, maximum stability in operation and 
+simplicity of implementation frequently arise during the development.
+
+EasyLocation is built to ease this frequent task by just a few lines of code, But providing a powerful, wide and compat features too.
 
 # Getting Started
+There are multiple ways to use EasyLocation depending on your business using:
+1.  BaseEasyLocationFragment
+2.  EasyLocationLifeCycleObserver
+3.  EasyLocationForegroundService
+
+#BaseEasyLocationFragment
+    The easiest way, just make the fragment extend...
+
+#EasyLocationLifeCycleObserver
+    ...
+
+#EasyLocationForegroundService
+    ...
+
+
+
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
 1.	Installation process
 2.	Software dependencies

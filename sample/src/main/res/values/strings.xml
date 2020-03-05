@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">LocationSample-Kotlin_android</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="nearby_location_permission_message">Location permission is required to be able to use this feature</string>
+    <string name="grant_permission">Grant permission</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_location_sample">LocationSampleActivity</string>
+
+</resources>
