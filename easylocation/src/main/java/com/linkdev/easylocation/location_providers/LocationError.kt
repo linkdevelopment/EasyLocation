@@ -1,4 +1,4 @@
-package com.linkdev.easylocation
+package com.linkdev.easylocation.location_providers
 
 enum class LocationError {
     LOCATION_PERMISSION_DENIED,

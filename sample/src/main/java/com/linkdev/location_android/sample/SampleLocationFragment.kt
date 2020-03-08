@@ -13,9 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.linkdev.easylocation.EasyLocationBaseFragment
-import com.linkdev.easylocation.LocationError
+import com.linkdev.easylocation.location_providers.LocationError
 import com.linkdev.easylocation.location_providers.LocationProvidersTypes
-import com.linkdev.easylocation.location_providers.gps.DisplacementLocationManagerOptions
+import com.linkdev.easylocation.location_providers.location_manager.DisplacementLocationManagerOptions
 import com.linkdev.location_android.R
 import com.linkdev.location_android.sample.utils.UIUtils
 import kotlinx.android.synthetic.main.location_sample_fragment.*
@@ -42,7 +42,7 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
         if (activity != null)
             mContext = activity!!
 
-        checkLocationReady(LocationProvidersTypes.GPS_LOCATION_PROVIDER,
+        checkLocationReady(LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER,
                 DisplacementLocationManagerOptions(),
                 false)
         tvLocation.text = "Retrieving ..."

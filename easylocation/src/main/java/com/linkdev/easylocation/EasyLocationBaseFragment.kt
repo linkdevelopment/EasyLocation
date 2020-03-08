@@ -15,8 +15,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.linkdev.easylocation.location_providers.LocationOptions
-import com.linkdev.easylocation.location_providers.LocationProvidersTypes
+import com.linkdev.easylocation.location_providers.*
+import com.linkdev.easylocation.location_providers.LocationResult
 import kotlin.properties.Delegates
 
 /**
@@ -54,8 +54,9 @@ abstract class EasyLocationBaseFragment : Fragment() {
      *
      * @param locationProviderType Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
      * @param locationOptions The specs required for retrieving location info, Depending on [locationProviderType]:
-     * - [LocationProvidersTypes.GPS_LOCATION_PROVIDER] Should be:
-     *      + [GPSLocationOptions]
+     * - [LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER] Should be one of:
+     *      + [DisplacementLocationManagerOptions]
+     *      + [TimeLocationManagerOptions]
      * - [LocationProvidersTypes.FUSED_LOCATION_PROVIDER] Should be one of:
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
@@ -98,14 +99,14 @@ abstract class EasyLocationBaseFragment : Fragment() {
                 .observe(this, Observer { locationStatus -> onLocationStatusRetrieved(locationStatus) })
     }
 
-    private fun onLocationStatusRetrieved(locationStatus: LocationStatus) {
-        when (locationStatus.status) {
+    private fun onLocationStatusRetrieved(locationResult: LocationResult) {
+        when (locationResult.status) {
             Status.SUCCESS -> {
-                if (locationStatus.location == null) {
+                if (locationResult.location == null) {
                     onLocationRetrievalError(LocationError.LOCATION_ERROR)
                     return
                 }
-                onLocationRetrieved(locationStatus.location)
+                onLocationRetrieved(locationResult.location)
             }
             Status.ERROR ->
                 onLocationRetrievalError(LocationError.LOCATION_ERROR)

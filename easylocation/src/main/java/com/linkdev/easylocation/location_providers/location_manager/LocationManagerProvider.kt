@@ -1,4 +1,4 @@
-package com.linkdev.easylocation.location_providers.gps
+package com.linkdev.easylocation.location_providers.location_manager
 
 import android.Manifest
 import android.content.Context
@@ -9,27 +9,27 @@ import android.location.LocationManager
 import android.os.Bundle
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
-import com.linkdev.easylocation.LocationStatus
+import com.linkdev.easylocation.location_providers.LocationResult
 import com.linkdev.easylocation.location_providers.LocationProvider
-import com.linkdev.easylocation.location_providers.LocationStatusListener
+import com.linkdev.easylocation.location_providers.LocationResultListener
 
 /**
- * This Provider uses the LocationManager to retrieve locations.
+ * This Provider uses the LocationManager to retrieve location.
  *
  * For more info check [https://developer.android.com/reference/android/location/LocationManager]
  */
-internal class LocationManagerLocationProvider(private val mContext: Context,
-                                               private val mLocationOptions: LocationManagerOptions) : LocationProvider {
+internal class LocationManagerProvider(private val mContext: Context,
+                                       private val mLocationOptions: LocationManagerOptions) : LocationProvider {
 
     private lateinit var mProvider: String
-    private lateinit var mLocationStatusListener: LocationStatusListener
+    private lateinit var mLocationResultListener: LocationResultListener
     private val mLocationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    override fun requestLocationUpdates(locationStatusListener: LocationStatusListener) {
-        mLocationStatusListener = locationStatusListener
+    override fun requestLocationUpdates(locationResultListener: LocationResultListener) {
+        mLocationResultListener = locationResultListener
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mLocationStatusListener.onLocationRetrieveError(LocationStatus.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrieveError(LocationResult.LocationPermissionNotGranted())
             return
         }
 
@@ -58,14 +58,14 @@ internal class LocationManagerLocationProvider(private val mContext: Context,
             if (location != null)
                 onLocationRetrieved(location)
             else
-                mLocationStatusListener.onLocationRetrieveError(LocationStatus.Error())
+                mLocationResultListener.onLocationRetrieveError(LocationResult.Error())
         } else {
-            mLocationStatusListener.onLocationRetrieveError(LocationStatus.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrieveError(LocationResult.LocationPermissionNotGranted())
         }
     }
 
     private fun onLocationRetrieved(location: Location) {
-        mLocationStatusListener.onLocationRetrieved(location)
+        mLocationResultListener.onLocationRetrieved(location)
     }
 
     private fun getMinDistance(): Float {
@@ -82,7 +82,7 @@ internal class LocationManagerLocationProvider(private val mContext: Context,
 
     private fun getProvider(): String {
         return when (mLocationOptions.locationManagerProvider) {
-            LocationManagerProviderTypes.GPS -> LocationManager.GPS_PROVIDER
+            LocationManagerProviderTypes.LOCATION_MANAGER -> LocationManager.GPS_PROVIDER
             LocationManagerProviderTypes.NETWORK -> LocationManager.NETWORK_PROVIDER
             LocationManagerProviderTypes.CRITERIA_BASED -> {
                 if (mLocationOptions.criteria == null)
@@ -106,7 +106,7 @@ internal class LocationManagerLocationProvider(private val mContext: Context,
 }
 
 enum class LocationManagerProviderTypes {
-    GPS,
+    LOCATION_MANAGER,
     NETWORK,
     CRITERIA_BASED
 }

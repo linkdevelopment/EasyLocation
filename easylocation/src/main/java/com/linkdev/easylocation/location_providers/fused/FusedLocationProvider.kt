@@ -8,10 +8,10 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
-import com.linkdev.easylocation.LocationStatus
+import com.linkdev.easylocation.location_providers.LocationResult
 import com.linkdev.easylocation.location_providers.LocationOptions
 import com.linkdev.easylocation.location_providers.LocationProvider
-import com.linkdev.easylocation.location_providers.LocationStatusListener
+import com.linkdev.easylocation.location_providers.LocationResultListener
 
 /**
  * This Provider uses the FusedLocationProvider and Google Play Services to retrieve location.
@@ -20,11 +20,11 @@ import com.linkdev.easylocation.location_providers.LocationStatusListener
  */
 internal class FusedLocationProvider(private val mContext: Context, private val mFusedLocationOptions: LocationOptions) : LocationProvider {
 
-    private lateinit var mLocationStatusListener: LocationStatusListener
+    private lateinit var mLocationResultListener: LocationResultListener
     private val mFusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext)
 
-    override fun requestLocationUpdates(locationStatusListener: LocationStatusListener) {
-        mLocationStatusListener = locationStatusListener
+    override fun requestLocationUpdates(locationResultListener: LocationResultListener) {
+        mLocationResultListener = locationResultListener
 
         val locationRequest = createLocationRequest(mFusedLocationOptions)
         mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, null)
@@ -41,27 +41,27 @@ internal class FusedLocationProvider(private val mContext: Context, private val 
                 ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             val bestProvider = locationManager.getBestProvider(Criteria(), true)
             if (bestProvider.isNullOrBlank()) {
-                mLocationStatusListener.onLocationRetrieveError(LocationStatus.Error())
+                mLocationResultListener.onLocationRetrieveError(LocationResult.Error())
                 return
             }
 
             val location = locationManager.getLastKnownLocation(bestProvider)
             if (location != null)
                 onLocationRetrieved(location)
-            else mLocationStatusListener.onLocationRetrieveError(LocationStatus.Error())
+            else mLocationResultListener.onLocationRetrieveError(LocationResult.Error())
         } else {
-            mLocationStatusListener.onLocationRetrieveError(LocationStatus.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrieveError(LocationResult.LocationPermissionNotGranted())
         }
     }
 
     private fun onLocationRetrieved(location: Location) {
-        mLocationStatusListener.onLocationRetrieved(location)
+        mLocationResultListener.onLocationRetrieved(location)
     }
 
     private val mLocationCallback: LocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
+        override fun onLocationResult(locationResult: com.google.android.gms.location.LocationResult?) {
             if (locationResult == null) {
-                mLocationStatusListener.onLocationRetrieveError(LocationStatus.Error())
+                mLocationResultListener.onLocationRetrieveError(LocationResult.Error())
                 return
             }
             onLocationRetrieved(locationResult.lastLocation)
