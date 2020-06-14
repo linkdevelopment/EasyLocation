@@ -6,5 +6,5 @@ internal interface LocationResultListener {
 
     fun onLocationRetrieved(location: Location)
 
-    fun onLocationRetrieveError(locationResult: LocationResult?)
+    fun onLocationRetrievalError(locationResult: LocationResult?)
 }

@@ -13,10 +13,10 @@ import com.linkdev.easylocation.location_providers.location_manager.LocationMana
 /**
  * LocationSampleKotlin_android Created by Mohammed.Fareed on 3/8/2020.
  * * // Copyright (c) 2020 LinkDev. All rights reserved.**/
-internal class EasyLocationProvidersFactory(private val mContext: Context,
-                                            private val mLocationResultListener: LocationResultListener,
-                                            private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
-                                            private var mSingleLocationRequest: Boolean = false) {
+internal class LocationProvidersFactory(private val mContext: Context,
+                                        private val mLocationResultListener: LocationResultListener,
+                                        private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
+                                        private var mSingleLocationRequest: Boolean = false) {
 
     private lateinit var mLocationProvider: LocationProvider
     private var mLocationRequestTimeoutHandler: Handler = Handler()

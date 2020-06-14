@@ -17,14 +17,14 @@ import com.linkdev.easylocation.location_providers.LocationResultListener
  *
  * @param mSingleLocationRequest true to emit the location only once.
  */
-class EasyLocationLifeCycleObserver(lifecycle: Lifecycle, private val mContext: Context,
+open class EasyLocationLifeCycleObserver(lifecycle: Lifecycle, private val mContext: Context,
                                     private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
                                     private var mSingleLocationRequest: Boolean = false
 ) : LifecycleObserver, LocationResultListener {
 
     private val mLocationResponseLiveData: MutableLiveData<LocationResult> = MutableLiveData()
 
-    private var mEasyLocationProvidersFactory: EasyLocationProvidersFactory = EasyLocationProvidersFactory(mContext, this, mMaxLocationRequestTime, mSingleLocationRequest)
+    private var mLocationProvidersFactory: LocationProvidersFactory = LocationProvidersFactory(mContext, this, mMaxLocationRequestTime, mSingleLocationRequest)
 
     init {
         lifecycle.addObserver(this)
@@ -47,13 +47,13 @@ class EasyLocationLifeCycleObserver(lifecycle: Lifecycle, private val mContext: 
      */
     fun requestLocationUpdates(locationProviderType: LocationProvidersTypes, locationOptions: LocationOptions):
             LiveData<LocationResult> {
-        mEasyLocationProvidersFactory.requestLocationUpdates(locationProviderType, locationOptions)
+        mLocationProvidersFactory.requestLocationUpdates(locationProviderType, locationOptions)
 
         return mLocationResponseLiveData
     }
 
     fun stopLocationUpdates() {
-        mEasyLocationProvidersFactory.stopLocationUpdates()
+        mLocationProvidersFactory.stopLocationUpdates()
     }
 
     override fun onLocationRetrieved(location: Location) {
@@ -62,7 +62,7 @@ class EasyLocationLifeCycleObserver(lifecycle: Lifecycle, private val mContext: 
         mLocationResponseLiveData.value = LocationResult.Success(location)
     }
 
-    override fun onLocationRetrieveError(locationResult: LocationResult?) {
+    override fun onLocationRetrievalError(locationResult: LocationResult?) {
         if (mSingleLocationRequest)
             stopLocationUpdates()
         mLocationResponseLiveData.value = locationResult

@@ -29,7 +29,7 @@ internal class LocationManagerProvider(private val mContext: Context,
         mLocationResultListener = locationResultListener
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mLocationResultListener.onLocationRetrieveError(LocationResult.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrievalError(LocationResult.LocationPermissionNotGranted())
             return
         }
 
@@ -58,9 +58,9 @@ internal class LocationManagerProvider(private val mContext: Context,
             if (location != null)
                 onLocationRetrieved(location)
             else
-                mLocationResultListener.onLocationRetrieveError(LocationResult.Error())
+                mLocationResultListener.onLocationRetrievalError(LocationResult.Error())
         } else {
-            mLocationResultListener.onLocationRetrieveError(LocationResult.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrievalError(LocationResult.LocationPermissionNotGranted())
         }
     }
 
