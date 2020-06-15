@@ -82,7 +82,7 @@ internal class LocationManagerProvider(private val mContext: Context,
 
     private fun getProvider(): String {
         return when (mLocationOptions.locationManagerProvider) {
-            LocationManagerProviderTypes.LOCATION_MANAGER -> LocationManager.GPS_PROVIDER
+            LocationManagerProviderTypes.GPS -> LocationManager.GPS_PROVIDER
             LocationManagerProviderTypes.NETWORK -> LocationManager.NETWORK_PROVIDER
             LocationManagerProviderTypes.CRITERIA_BASED -> {
                 if (mLocationOptions.criteria == null)
@@ -103,10 +103,4 @@ internal class LocationManagerProvider(private val mContext: Context,
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
     }
-}
-
-enum class LocationManagerProviderTypes {
-    LOCATION_MANAGER,
-    NETWORK,
-    CRITERIA_BASED
 }

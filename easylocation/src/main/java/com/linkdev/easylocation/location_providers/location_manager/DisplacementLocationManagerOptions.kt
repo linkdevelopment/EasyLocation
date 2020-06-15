@@ -1,7 +1,7 @@
 package com.linkdev.easylocation.location_providers.location_manager
 
 import android.location.Criteria
-import com.linkdev.easylocation.EasyLocationConstants
+import com.linkdev.easylocation.utils.EasyLocationConstants
 
 /**
  * EasyLocation_Android Created by Mohammed.Fareed on 1/15/2020.
@@ -15,6 +15,6 @@ import com.linkdev.easylocation.EasyLocationConstants
  * @param criteria Should be applied in case of [LocationManagerProviderTypes.CRITERIA_BASED] only otherwise the value will be ignored.
  */
 class DisplacementLocationManagerOptions(val minDistance: Float = EasyLocationConstants.DEFAULT_MIN_DISTANCE,
-                                         override val locationManagerProvider: LocationManagerProviderTypes = LocationManagerProviderTypes.LOCATION_MANAGER,
+                                         override val locationManagerProvider: LocationManagerProviderTypes = LocationManagerProviderTypes.GPS,
                                          override val criteria: Criteria? = null) :
         LocationManagerOptions(locationManagerProvider, criteria)

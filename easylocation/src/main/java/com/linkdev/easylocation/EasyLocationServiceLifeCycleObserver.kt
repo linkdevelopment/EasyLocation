@@ -2,6 +2,7 @@ package com.linkdev.easylocation
 
 import android.content.Context
 import androidx.lifecycle.Lifecycle
+import com.linkdev.easylocation.utils.EasyLocationConstants
 
 /**
  * LocationSampleKotlin_android Created by Mohammed.Fareed on 3/10/2020.

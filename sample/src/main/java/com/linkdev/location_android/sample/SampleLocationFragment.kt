@@ -33,7 +33,11 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.location_sample_fragment, container, false)
     }
 
@@ -42,16 +46,20 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
         if (activity != null)
             mContext = activity!!
 
-        checkLocationReady(LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER,
-                DisplacementLocationManagerOptions(),
-                false)
+        checkLocationReady(
+            LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER,
+            DisplacementLocationManagerOptions(),
+            false
+        )
         tvLocation.text = "Retrieving ..."
     }
 
     override fun onLocationRetrieved(location: Location) {
         Toast.makeText(context!!, "Location updated.", Toast.LENGTH_LONG).show()
-        val latLng = String.format(Locale.ENGLISH, "%f - %f",
-                location.latitude, location.longitude)
+        val latLng = String.format(
+            Locale.ENGLISH, "%f - %f",
+            location.latitude, location.longitude
+        )
         Log.d("LocationUpdated", "Location updated $latLng")
         tvLocation.text = latLng
     }
@@ -59,11 +67,16 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
     override fun onLocationRetrievalError(locationError: LocationError) {
         when (locationError) {
             LocationError.SHOULD_SHOW_RATIONAL -> {
-                val alertDialog = UIUtils.showBasicDialog(mContext, null, getString(R.string.nearby_location_permission_message),
-                        getString(R.string.grant_permission), getString(R.string.cancel),
-                        this::onLocationPermissionDialogInteraction)
+                val alertDialog = UIUtils.showBasicDialog(
+                    mContext, null, getString(R.string.nearby_location_permission_message),
+                    getString(R.string.grant_permission), getString(R.string.cancel),
+                    this::onLocationPermissionDialogInteraction
+                )
                 alertDialog.setOnCancelListener { dialogInterface ->
-                    onLocationPermissionDialogInteraction(dialogInterface, DialogInterface.BUTTON_NEGATIVE)
+                    onLocationPermissionDialogInteraction(
+                        dialogInterface,
+                        DialogInterface.BUTTON_NEGATIVE
+                    )
                 }
             }
             LocationError.LOCATION_SETTING_DENIED ->
@@ -71,23 +84,34 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
             LocationError.LOCATION_PERMISSION_DENIED ->
                 Toast.makeText(mContext, "Location permission denied", Toast.LENGTH_SHORT).show()
             LocationError.LOCATION_ERROR ->
-                Toast.makeText(mContext, "Something went wrong and the location returned as null", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    mContext,
+                    "Something went wrong and the location returned as null",
+                    Toast.LENGTH_SHORT
+                ).show()
         }
     }
 
-    private fun onLocationPermissionDialogInteraction(dialogInterface: DialogInterface, which: Int) {
+    private fun onLocationPermissionDialogInteraction(
+        dialogInterface: DialogInterface,
+        which: Int
+    ) {
         dialogInterface.dismiss()
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> {
                 val intent = Intent()
                 intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                 val uri =
-                        Uri.fromParts("package", mContext.packageName, null)
+                    Uri.fromParts("package", mContext.packageName, null)
                 intent.data = uri
                 startActivity(intent)
             }
             DialogInterface.BUTTON_NEGATIVE -> {
-                onLocationPermissionDenied()
+                Toast.makeText(
+                    mContext,
+                    "You will not be able to use this feature. ",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

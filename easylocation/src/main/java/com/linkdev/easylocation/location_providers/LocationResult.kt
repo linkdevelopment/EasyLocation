@@ -9,7 +9,7 @@ sealed class LocationResult(val status: Status, val location: Location? = null) 
 
     class Success(location: Location) : LocationResult(Status.SUCCESS, location)
 
-    class LocationPermissionNotGranted() : LocationResult(Status.PERMISSION_NOT_GRANTED)
+    class LocationPermissionNotGranted : LocationResult(Status.PERMISSION_NOT_GRANTED)
 
-    class Error() : LocationResult(Status.ERROR)
+    class Error : LocationResult(Status.ERROR)
 }

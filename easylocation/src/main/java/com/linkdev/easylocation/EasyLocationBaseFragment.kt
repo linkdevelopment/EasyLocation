@@ -3,6 +3,7 @@ package com.linkdev.easylocation
 import android.location.Location
 import androidx.lifecycle.Observer
 import com.linkdev.easylocation.location_providers.*
+import com.linkdev.easylocation.utils.EasyLocationConstants
 import kotlin.properties.Delegates
 
 /**

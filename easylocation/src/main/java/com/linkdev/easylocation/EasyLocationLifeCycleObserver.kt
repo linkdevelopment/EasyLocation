@@ -5,6 +5,7 @@ import android.location.Location
 import androidx.lifecycle.*
 import com.linkdev.easylocation.location_providers.*
 import com.linkdev.easylocation.location_providers.LocationResultListener
+import com.linkdev.easylocation.utils.EasyLocationConstants
 
 /**
  * Use this class to listen for location updates .
@@ -18,8 +19,8 @@ import com.linkdev.easylocation.location_providers.LocationResultListener
  * @param mSingleLocationRequest true to emit the location only once.
  */
 open class EasyLocationLifeCycleObserver(lifecycle: Lifecycle, private val mContext: Context,
-                                    private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
-                                    private var mSingleLocationRequest: Boolean = false
+                                         private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
+                                         private var mSingleLocationRequest: Boolean = false
 ) : LifecycleObserver, LocationResultListener {
 
     private val mLocationResponseLiveData: MutableLiveData<LocationResult> = MutableLiveData()

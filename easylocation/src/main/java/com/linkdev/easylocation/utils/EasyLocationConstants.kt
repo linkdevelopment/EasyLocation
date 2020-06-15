@@ -1,4 +1,4 @@
-package com.linkdev.easylocation
+package com.linkdev.easylocation.utils
 
 import com.google.android.gms.location.LocationRequest
 

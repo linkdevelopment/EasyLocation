@@ -18,7 +18,7 @@ import com.linkdev.easylocation.location_providers.LocationResultListener
  *
  * For more info check [https://developers.google.com/location-context/fused-location-provider]
  */
-internal class FusedLocationProvider(private val mContext: Context, private val mFusedLocationOptions: LocationOptions) : LocationProvider {
+internal class FusedLocationProvider(private val mContext: Context, private val mFusedLocationOptions: FusedLocationOptions) : LocationProvider {
 
     private lateinit var mLocationResultListener: LocationResultListener
     private val mFusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext)

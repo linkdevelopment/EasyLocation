@@ -1,6 +1,6 @@
 package com.linkdev.easylocation.location_providers.fused
 
-import com.linkdev.easylocation.EasyLocationConstants
+import com.linkdev.easylocation.utils.EasyLocationConstants
 import com.linkdev.easylocation.location_providers.LocationOptions
 
 /**
@@ -17,4 +17,4 @@ import com.linkdev.easylocation.location_providers.LocationOptions
  */
 class DisplacementFusedLocationOptions(val smallestDisplacement: Float = EasyLocationConstants.DEFAULT_MIN_DISTANCE,
                                        val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
-                                       val priority: Int = EasyLocationConstants.DEFAULT_PRIORITY) : LocationOptions
+                                       val priority: Int = EasyLocationConstants.DEFAULT_PRIORITY) : FusedLocationOptions

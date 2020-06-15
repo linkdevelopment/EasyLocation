@@ -13,5 +13,5 @@ import com.linkdev.easylocation.location_providers.LocationOptions
  * **/
 open class LocationManagerOptions(
         open val locationManagerProvider: LocationManagerProviderTypes,
-        open val criteria: Criteria?
+        open val criteria: Criteria? = null
 ) : LocationOptions

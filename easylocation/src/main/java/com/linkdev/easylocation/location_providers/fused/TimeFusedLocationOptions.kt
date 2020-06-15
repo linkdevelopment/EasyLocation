@@ -1,6 +1,6 @@
 package com.linkdev.easylocation.location_providers.fused
 
-import com.linkdev.easylocation.EasyLocationConstants
+import com.linkdev.easylocation.utils.EasyLocationConstants
 import com.linkdev.easylocation.location_providers.LocationOptions
 
 /**
@@ -16,5 +16,5 @@ import com.linkdev.easylocation.location_providers.LocationOptions
  *                  location updates faster than it.<p> @defaults_to 2 milliseconds.
  */
 class TimeFusedLocationOptions(val interval: Long = EasyLocationConstants.DEFAULT_INTERVAL,
-                               val priority: Int = EasyLocationConstants.DEFAULT_PRIORITY,
-                               val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL) : LocationOptions
+                               val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
+                               val priority: Int = EasyLocationConstants.DEFAULT_PRIORITY) : FusedLocationOptions

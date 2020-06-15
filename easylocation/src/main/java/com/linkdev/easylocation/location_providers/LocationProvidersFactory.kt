@@ -2,21 +2,23 @@ package com.linkdev.easylocation.location_providers
 
 import android.content.Context
 import android.os.Handler
-import com.linkdev.easylocation.EasyLocationConstants
 import com.linkdev.easylocation.location_providers.fused.DisplacementFusedLocationOptions
+import com.linkdev.easylocation.location_providers.fused.FusedLocationOptions
 import com.linkdev.easylocation.location_providers.fused.FusedLocationProvider
 import com.linkdev.easylocation.location_providers.fused.TimeFusedLocationOptions
-import com.linkdev.easylocation.location_providers.location_manager.DisplacementLocationManagerOptions
-import com.linkdev.easylocation.location_providers.location_manager.LocationManagerProvider
 import com.linkdev.easylocation.location_providers.location_manager.LocationManagerOptions
+import com.linkdev.easylocation.location_providers.location_manager.LocationManagerProvider
+import com.linkdev.easylocation.utils.EasyLocationConstants
 
 /**
  * LocationSampleKotlin_android Created by Mohammed.Fareed on 3/8/2020.
  * * // Copyright (c) 2020 LinkDev. All rights reserved.**/
-internal class LocationProvidersFactory(private val mContext: Context,
-                                        private val mLocationResultListener: LocationResultListener,
-                                        private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
-                                        private var mSingleLocationRequest: Boolean = false) {
+internal class LocationProvidersFactory(
+    private val mContext: Context,
+    private val mLocationResultListener: LocationResultListener,
+    private var mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
+    private var mSingleLocationRequest: Boolean = false
+) {
 
     private lateinit var mLocationProvider: LocationProvider
     private var mLocationRequestTimeoutHandler: Handler = Handler()
@@ -36,17 +38,20 @@ internal class LocationProvidersFactory(private val mContext: Context,
      *
      * @throws IllegalArgumentException If the [locationOptions] does not correspond to the selected [LocationProvidersTypes] mentioned above.
      */
-    fun requestLocationUpdates(locationProviderType: LocationProvidersTypes, locationOptions: LocationOptions) {
+    fun requestLocationUpdates(
+        locationProviderType: LocationProvidersTypes,
+        locationOptions: LocationOptions
+    ) {
         when (locationProviderType) {
             LocationProvidersTypes.FUSED_LOCATION_PROVIDER -> {
-                if (locationOptions !is DisplacementFusedLocationOptions) {
-                    throw IllegalArgumentException("Fused location provider options not found should be [FusedLocationOptions]")
+                require(locationOptions is FusedLocationOptions) {
+                    "Fused location provider options not found should be [DisplacementFusedLocationOptions, TimeFusedLocationOptions]"
                 }
                 startFusedLocationUpdates(locationOptions)
             }
             LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER -> {
-                if (locationOptions !is DisplacementLocationManagerOptions) {
-                    throw IllegalArgumentException("LocationManager location provider options not found should be one of [LocationManagerOptions]")
+                require(locationOptions is LocationManagerOptions) {
+                    throw IllegalArgumentException("LocationManager location provider options not found should be one of [DisplacementLocationManagerOptions, TimeLocationManagerOptions]")
                 }
                 startLocationManagerUpdates(locationOptions)
             }
@@ -62,7 +67,7 @@ internal class LocationProvidersFactory(private val mContext: Context,
      *
      * @return LiveData object to listen for location updates with [LocationResult].
      */
-    private fun startFusedLocationUpdates(fusedLocationOptions: LocationOptions) {
+    private fun startFusedLocationUpdates(fusedLocationOptions: FusedLocationOptions) {
         if (mSingleLocationRequest)
             startLocationRequestTimer()
         requestFusedLocationUpdates(fusedLocationOptions)
@@ -79,7 +84,7 @@ internal class LocationProvidersFactory(private val mContext: Context,
         requestLocationManagerUpdates(locationManagerOptions)
     }
 
-    private fun requestFusedLocationUpdates(fusedLocationOptions: LocationOptions) {
+    private fun requestFusedLocationUpdates(fusedLocationOptions: FusedLocationOptions) {
         mLocationProvider = FusedLocationProvider(mContext, fusedLocationOptions)
         mLocationProvider.requestLocationUpdates(mLocationResultListener)
     }
