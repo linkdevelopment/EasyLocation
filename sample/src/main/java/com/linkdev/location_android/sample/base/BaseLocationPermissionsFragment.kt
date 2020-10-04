@@ -1,4 +1,4 @@
-package com.linkdev.easylocation
+package com.linkdev.location_android.sample.base
 
 import android.Manifest
 import android.app.Activity
@@ -18,7 +18,7 @@ import com.linkdev.easylocation.location_providers.LocationError
 /**
  * LocationSampleKotlin_android Created by Mohammed.Fareed on 3/9/2020.
  * * // Copyright (c) 2020 LinkDev. All rights reserved.**/
-abstract class EasyLocationBasePermissionsFragment : Fragment() {
+abstract class BaseLocationPermissionsFragment : Fragment() {
 
     companion object {
         private const val MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 1
@@ -56,7 +56,7 @@ abstract class EasyLocationBasePermissionsFragment : Fragment() {
             }
             ActivityCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        MY_PERMISSIONS_REQUEST_COARSE_LOCATION
+                    MY_PERMISSIONS_REQUEST_COARSE_LOCATION
                 )
             }
             else -> {
@@ -102,7 +102,8 @@ abstract class EasyLocationBasePermissionsFragment : Fragment() {
 
     private fun requestLocationSetting(resolvable: ResolvableApiException) {
         try {
-            startIntentSenderForResult(resolvable.resolution.intentSender, REQUEST_CODE_LOCATION_SETTINGS, null, 0, 0, 0, null)
+            startIntentSenderForResult(resolvable.resolution.intentSender,
+                REQUEST_CODE_LOCATION_SETTINGS, null, 0, 0, 0, null)
         } catch (e: IntentSender.SendIntentException) {
             e.printStackTrace()
             onLocationSettingDenied()

@@ -1,4 +1,4 @@
-package com.linkdev.easylocation.location_providers.fused
+package com.linkdev.easylocation.location_providers.fused.options
 
 import com.linkdev.easylocation.location_providers.LocationOptions
 

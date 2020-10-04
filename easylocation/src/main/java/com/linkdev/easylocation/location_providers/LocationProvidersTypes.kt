@@ -15,5 +15,5 @@ enum class LocationProvidersTypes {
      *
      * For more info check [https://developer.android.com/reference/android/location/LocationManager]
      */
-    LOCATION_MANAGER_LOCATION_PROVIDER,
+    LOCATION_MANAGER_PROVIDER,
 }

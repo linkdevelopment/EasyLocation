@@ -2,11 +2,11 @@ package com.linkdev.easylocation.location_providers
 
 import android.content.Context
 import android.os.Handler
-import com.linkdev.easylocation.location_providers.fused.DisplacementFusedLocationOptions
-import com.linkdev.easylocation.location_providers.fused.FusedLocationOptions
+import com.linkdev.easylocation.location_providers.fused.options.DisplacementFusedLocationOptions
+import com.linkdev.easylocation.location_providers.fused.options.FusedLocationOptions
 import com.linkdev.easylocation.location_providers.fused.FusedLocationProvider
-import com.linkdev.easylocation.location_providers.fused.TimeFusedLocationOptions
-import com.linkdev.easylocation.location_providers.location_manager.LocationManagerOptions
+import com.linkdev.easylocation.location_providers.fused.options.TimeFusedLocationOptions
+import com.linkdev.easylocation.location_providers.location_manager.options.LocationManagerOptions
 import com.linkdev.easylocation.location_providers.location_manager.LocationManagerProvider
 import com.linkdev.easylocation.utils.EasyLocationConstants
 
@@ -27,7 +27,7 @@ internal class LocationProvidersFactory(
      * @param locationProviderType Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
      *
      * @param locationOptions The specs required for retrieving location info, Depending on [locationProviderType]:
-     * - [LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER] Should be one of:
+     * - [LocationProvidersTypes.LOCATION_MANAGER_PROVIDER] Should be one of:
      *      + [DisplacementLocationManagerOptions]
      *      + [TimeLocationManagerOptions]
      * - [LocationProvidersTypes.FUSED_LOCATION_PROVIDER] Should be one of:
@@ -49,7 +49,7 @@ internal class LocationProvidersFactory(
                 }
                 startFusedLocationUpdates(locationOptions)
             }
-            LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER -> {
+            LocationProvidersTypes.LOCATION_MANAGER_PROVIDER -> {
                 require(locationOptions is LocationManagerOptions) {
                     throw IllegalArgumentException("LocationManager location provider options not found should be one of [DisplacementLocationManagerOptions, TimeLocationManagerOptions]")
                 }
@@ -74,7 +74,7 @@ internal class LocationProvidersFactory(
     }
 
     /**
-     * Creates location updates request with the LocationManager location provider [LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER].
+     * Creates location updates request with the LocationManager location provider [LocationProvidersTypes.LOCATION_MANAGER_PROVIDER].
      *
      * @return LiveData object to listen for location updates with [LocationResult].
      */

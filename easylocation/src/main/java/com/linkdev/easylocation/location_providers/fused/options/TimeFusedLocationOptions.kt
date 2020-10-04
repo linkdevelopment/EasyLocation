@@ -1,7 +1,7 @@
-package com.linkdev.easylocation.location_providers.fused
+package com.linkdev.easylocation.location_providers.fused.options
 
 import com.linkdev.easylocation.utils.EasyLocationConstants
-import com.linkdev.easylocation.location_providers.LocationOptions
+import com.linkdev.easylocation.location_providers.fused.options.FusedLocationOptions
 
 /**
  * EasyLocation_Android Created by Mohammed.Fareed on 1/15/2020.
@@ -15,6 +15,8 @@ import com.linkdev.easylocation.location_providers.LocationOptions
  * @param fastestInterval Get the fastest interval of this request, in milliseconds, The system will never provide
  *                  location updates faster than it.<p> @defaults_to 2 milliseconds.
  */
-class TimeFusedLocationOptions(val interval: Long = EasyLocationConstants.DEFAULT_INTERVAL,
-                               val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
-                               val priority: Int = EasyLocationConstants.DEFAULT_PRIORITY) : FusedLocationOptions
+class TimeFusedLocationOptions(
+    val interval: Long = EasyLocationConstants.DEFAULT_INTERVAL,
+    val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
+    val priority: Int = EasyLocationConstants.DEFAULT_PRIORITY
+) : FusedLocationOptions

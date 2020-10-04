@@ -2,33 +2,38 @@ package com.linkdev.easylocation.location_providers.location_manager
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import androidx.annotation.RequiresPermission
-import androidx.core.content.ContextCompat
 import com.linkdev.easylocation.location_providers.LocationResult
 import com.linkdev.easylocation.location_providers.LocationProvider
 import com.linkdev.easylocation.location_providers.LocationResultListener
+import com.linkdev.easylocation.location_providers.location_manager.options.DisplacementLocationManagerOptions
+import com.linkdev.easylocation.location_providers.location_manager.options.LocationManagerOptions
+import com.linkdev.easylocation.location_providers.location_manager.options.LocationManagerProviderTypes
+import com.linkdev.easylocation.location_providers.location_manager.options.TimeLocationManagerOptions
+import com.linkdev.easylocation.utils.LocationUtils
 
 /**
  * This Provider uses the LocationManager to retrieve location.
  *
  * For more info check [https://developer.android.com/reference/android/location/LocationManager]
  */
-internal class LocationManagerProvider(private val mContext: Context,
-                                       private val mLocationOptions: LocationManagerOptions) : LocationProvider {
+internal class LocationManagerProvider(
+    private val mContext: Context,
+    private val mLocationOptions: LocationManagerOptions
+) : LocationProvider {
 
     private lateinit var mProvider: String
     private lateinit var mLocationResultListener: LocationResultListener
-    private val mLocationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private val mLocationManager =
+        mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     override fun requestLocationUpdates(locationResultListener: LocationResultListener) {
         mLocationResultListener = locationResultListener
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (!LocationUtils.locationPermissionGranted(mContext)) {
             mLocationResultListener.onLocationRetrievalError(LocationResult.LocationPermissionNotGranted())
             return
         }
@@ -50,18 +55,17 @@ internal class LocationManagerProvider(private val mContext: Context,
     }
 
     override fun fetchLatestKnownLocation() {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            val location = mLocationManager.getLastKnownLocation(mProvider)
-
-            if (location != null)
-                onLocationRetrieved(location)
-            else
-                mLocationResultListener.onLocationRetrievalError(LocationResult.Error())
-        } else {
+        if (!LocationUtils.locationPermissionGranted(mContext)) {
             mLocationResultListener.onLocationRetrievalError(LocationResult.LocationPermissionNotGranted())
+            return
         }
+
+        val location = mLocationManager.getLastKnownLocation(mProvider)
+
+        if (location != null)
+            onLocationRetrieved(location)
+        else
+            mLocationResultListener.onLocationRetrievalError(LocationResult.Error())
     }
 
     private fun onLocationRetrieved(location: Location) {
@@ -80,6 +84,12 @@ internal class LocationManagerProvider(private val mContext: Context,
         else 0
     }
 
+    /**
+     * Retrieves the LocationProviders from the Location manager based on the selected [LocationManagerProviderTypes].
+     *
+     * In case the type selected [LocationManagerProviderTypes.CRITERIA_BASED]
+     * and there are no providers available matching this criteria GPS will be used.
+     */
     private fun getProvider(): String {
         return when (mLocationOptions.locationManagerProvider) {
             LocationManagerProviderTypes.GPS -> LocationManager.GPS_PROVIDER
@@ -89,7 +99,7 @@ internal class LocationManagerProvider(private val mContext: Context,
                     throw IllegalArgumentException("Criteria is not set on CRITERIA_BASED provider.")
 
                 mLocationManager.getBestProvider(mLocationOptions.criteria!!, true)
-                        ?: LocationManager.GPS_PROVIDER
+                    ?: LocationManager.GPS_PROVIDER
             }
         }
     }

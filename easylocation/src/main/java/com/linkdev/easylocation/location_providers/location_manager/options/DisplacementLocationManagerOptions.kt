@@ -1,4 +1,4 @@
-package com.linkdev.easylocation.location_providers.location_manager
+package com.linkdev.easylocation.location_providers.location_manager.options
 
 import android.location.Criteria
 import com.linkdev.easylocation.utils.EasyLocationConstants

@@ -5,60 +5,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".sample.SampleLocationFragment">
+    tools:context=".sample.SampleLocationFragmentLocation">
 
-    <TextView
-        android:id="@+id/tvLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".3"
-        tools:text="1.222 - 3.111" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/checkBoxSingleRequest"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="0dp"
+        <TextView
+            android:id="@+id/txtLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/location_placeholder"
+            android:textSize="16sp" />
+    </androidx.core.widget.NestedScrollView>
+
+    <CheckBox
+        android:id="@+id/checkBoxSingleRequest"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:layout_marginBottom="@dimen/margin_small"
-        app:layout_constraintBottom_toTopOf="@id/btnStartLocation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/txt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Text" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:text="Single request"
+        app:layout_constraintBottom_toTopOf="@id/btnLocate" />
 
     <Button
-        android:id="@+id/btnStartLocation"
+        android:id="@+id/btnLocate"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_marginStart="@dimen/margin_medium"
         android:layout_marginEnd="@dimen/margin_medium"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:text="Start location"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:text="@string/start_location"
         android:textColor="@android:color/white"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent=".45" />
 
-    <Button
-        android:id="@+id/btnStopLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_medium"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:background="?selectableItemBackground"
-        android:text="Stop location"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent=".45" />
 </androidx.constraintlayout.widget.ConstraintLayout>

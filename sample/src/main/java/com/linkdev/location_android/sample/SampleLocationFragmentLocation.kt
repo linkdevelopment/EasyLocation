@@ -3,35 +3,43 @@ package com.linkdev.location_android.sample
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.Toast
-import com.linkdev.easylocation.EasyLocationBaseFragment
+import androidx.core.content.ContextCompat
 import com.linkdev.easylocation.location_providers.LocationError
 import com.linkdev.easylocation.location_providers.LocationProvidersTypes
-import com.linkdev.easylocation.location_providers.location_manager.DisplacementLocationManagerOptions
+import com.linkdev.easylocation.location_providers.fused.options.DisplacementFusedLocationOptions
+import com.linkdev.easylocation.location_providers.location_manager.options.TimeLocationManagerOptions
 import com.linkdev.location_android.R
+import com.linkdev.location_android.sample.base.LocationBaseLocationFragment
 import com.linkdev.location_android.sample.utils.UIUtils
 import kotlinx.android.synthetic.main.location_sample_fragment.*
+import java.text.SimpleDateFormat
 import java.util.*
 
-class SampleLocationFragment : EasyLocationBaseFragment() {
+class SampleLocationFragmentLocation : LocationBaseLocationFragment() {
 
     private lateinit var mContext: Context
 
     companion object {
         const val TAG = "SampleLocationFragment"
 
-        fun newInstance(): SampleLocationFragment {
-            return SampleLocationFragment()
+        fun newInstance(): SampleLocationFragmentLocation {
+            return SampleLocationFragmentLocation()
         }
     }
+
+    private var mRetrievingLocation = false
+    private var isSingleRequest = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,25 +54,61 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
         if (activity != null)
             mContext = activity!!
 
-        checkLocationReady(
-            LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER,
-            DisplacementLocationManagerOptions(),
-            false
-        )
-        tvLocation.text = "Retrieving ..."
+        initViews()
+        setListeners()
+    }
+
+    private fun initViews() {
+    }
+
+    private fun setListeners() {
+        btnLocate.setOnClickListener { onLocationClicked() }
+        checkBoxSingleRequest.setOnCheckedChangeListener(isSingleRequestChecked())
+    }
+
+    private fun isSingleRequestChecked(): CompoundButton.OnCheckedChangeListener {
+        return CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            isSingleRequest = isChecked
+        }
+    }
+
+    private fun onLocationClicked() {
+        applyButtonStyle(mRetrievingLocation)
+        if (mRetrievingLocation) {
+
+            stopLocation()
+        } else {
+            txtLocation.text = ""
+
+            getLocation(
+                LocationProvidersTypes.LOCATION_MANAGER_PROVIDER,
+                TimeLocationManagerOptions(),
+                isSingleRequest
+            )
+        }
+        mRetrievingLocation = !mRetrievingLocation
     }
 
     override fun onLocationRetrieved(location: Location) {
-        Toast.makeText(context!!, "Location updated.", Toast.LENGTH_LONG).show()
+        if (isSingleRequest)
+            applyButtonStyle(true)
+
         val latLng = String.format(
             Locale.ENGLISH, "%f - %f",
             location.latitude, location.longitude
         )
-        Log.d("LocationUpdated", "Location updated $latLng")
-        tvLocation.text = latLng
+        txtLocation.text = "${txtLocation.text}\n\n$latLng    ${getCurrentTime()}"
+    }
+
+    private fun getCurrentTime(): String {
+        val date = Date()
+        return SimpleDateFormat("hh:mm:ss").format(date)
     }
 
     override fun onLocationRetrievalError(locationError: LocationError) {
+        mRetrievingLocation = false
+        applyButtonStyle(true)
+
         when (locationError) {
             LocationError.SHOULD_SHOW_RATIONAL -> {
                 val alertDialog = UIUtils.showBasicDialog(
@@ -113,6 +157,20 @@ class SampleLocationFragment : EasyLocationBaseFragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+    }
+
+    private fun applyButtonStyle(locate: Boolean) {
+        if (locate) {
+            btnLocate.text = getString(R.string.start_location)
+            btnLocate.background.colorFilter = PorterDuffColorFilter(
+                ContextCompat.getColor(mContext, R.color.colorPrimary), PorterDuff.Mode.MULTIPLY
+            )
+        } else {
+            btnLocate.text = getString(R.string.stop_location)
+            btnLocate.background.colorFilter = PorterDuffColorFilter(
+                ContextCompat.getColor(mContext, R.color.colorAccent), PorterDuff.Mode.MULTIPLY
+            )
         }
     }
 }

@@ -15,7 +15,7 @@ class LocationSampleActivity : AppCompatActivity() {
 
         if (savedInstanceState == null)
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.flFragmentContainer, SampleLocationFragment.newInstance(), SampleLocationFragment.TAG)
+                    .replace(R.id.flFragmentContainer, SampleLocationFragmentLocation.newInstance(), SampleLocationFragmentLocation.TAG)
                     .commitNow()
     }
 

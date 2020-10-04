@@ -3,7 +3,7 @@ Working with location is one of the most common tasks in the development process
 Therefore, questions about what to use to achieve more precise results, maximum stability in operation and 
 simplicity of implementation frequently arise during the development.
 
-EasyLocation is built to ease this frequent task by just a few lines of code, But providing a powerful, wide and compat features too.
+EasyLocation is built to ease this frequent task by using just a few lines of code, But providing a powerful, wide and compact features too.
 
 # Getting Started
 There are multiple ways to use EasyLocation depending on your business using:
@@ -11,13 +11,13 @@ There are multiple ways to use EasyLocation depending on your business using:
 2.  EasyLocationLifeCycleObserver
 3.  EasyLocationForegroundService
 
-#BaseEasyLocationFragment
+##BaseEasyLocationFragment
     The easiest way, just make the fragment extend...
 
-#EasyLocationLifeCycleObserver
+##EasyLocationLifeCycleObserver
     ...
 
-#EasyLocationForegroundService
+##EasyLocationForegroundService
     ...
 
 

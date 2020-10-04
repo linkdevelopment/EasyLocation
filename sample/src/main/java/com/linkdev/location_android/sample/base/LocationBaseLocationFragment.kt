@@ -1,15 +1,17 @@
-package com.linkdev.easylocation
+package com.linkdev.location_android.sample.base
 
 import android.location.Location
 import androidx.lifecycle.Observer
+import com.linkdev.easylocation.EasyLocation
 import com.linkdev.easylocation.location_providers.*
-import com.linkdev.easylocation.utils.EasyLocationConstants
 import kotlin.properties.Delegates
 
 /**
  * Created by Mohammed Fareed on 30/5/2019.
  */
-abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() {
+abstract class LocationBaseLocationFragment : BaseLocationPermissionsFragment() {
+
+    private lateinit var mEasyLocation: EasyLocation
 
     private lateinit var mLocationProviderType: LocationProvidersTypes
     private lateinit var mLocationOptions: LocationOptions
@@ -24,7 +26,7 @@ abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() 
     abstract fun onLocationRetrievalError(locationError: LocationError)
 
     /**
-     * The entry point for [EasyLocationBaseFragment] after calling this method:
+     * The entry point for [LocationBaseLocationFragment] after calling this method:
      *
      * 1- Location permission will be Checked.
      *
@@ -36,7 +38,7 @@ abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() 
      *
      * @param locationProviderType Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
      * @param locationOptions The specs required for retrieving location info, Depending on [locationProviderType]:
-     * - [LocationProvidersTypes.LOCATION_MANAGER_LOCATION_PROVIDER] Should be one of:
+     * - [LocationProvidersTypes.LOCATION_MANAGER_PROVIDER] Should be one of:
      *      + [DisplacementLocationManagerOptions]
      *      + [TimeLocationManagerOptions]
      * - [LocationProvidersTypes.FUSED_LOCATION_PROVIDER] Should be one of:
@@ -47,10 +49,12 @@ abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() 
      *      if exceeded stops the location updates and returns error <P>
      *      @Default{#LocationLifecycleObserver.DEFAULT_MAX_LOCATION_REQUEST_TIME}.
      */
-    protected fun checkLocationReady(locationProviderType: LocationProvidersTypes,
-                                     locationOptions: LocationOptions,
-                                     singleLocationRequest: Boolean = false,
-                                     maxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME) {
+    protected fun getLocation(
+        locationProviderType: LocationProvidersTypes,
+        locationOptions: LocationOptions,
+        singleLocationRequest: Boolean = false,
+        maxLocationRequestTime: Long = 50000
+    ) {
         mLocationProviderType = locationProviderType
         mLocationOptions = locationOptions
         mSingleLocationRequest = singleLocationRequest
@@ -60,17 +64,25 @@ abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() 
     }
 
     override fun onLocationPermissionsReady() {
-        retrieveLocation()
+        getLocation()
     }
 
     override fun onLocationPermissionError(locationError: LocationError) {
         onLocationRetrievalError(locationError)
     }
 
-    private fun retrieveLocation() {
-        EasyLocationLifeCycleObserver(lifecycle, context!!, mMaxLocationRequestTime, mSingleLocationRequest)
-                .requestLocationUpdates(mLocationProviderType, mLocationOptions)
-                .observe(this, Observer { locationStatus -> onLocationStatusRetrieved(locationStatus) })
+    private fun getLocation() {
+        mEasyLocation = EasyLocation.Builder(context!!)
+            .setMaxLocationRequestTime(mMaxLocationRequestTime)
+            .setSingleLocationRequest(mSingleLocationRequest)
+            .build()
+
+        mEasyLocation.requestLifecycleLocationUpdates(
+            lifecycle,
+            mLocationProviderType,
+            mLocationOptions
+        )
+            .observe(this, Observer { locationStatus -> onLocationStatusRetrieved(locationStatus) })
     }
 
     private fun onLocationStatusRetrieved(locationResult: LocationResult) {
@@ -80,7 +92,7 @@ abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() 
                     onLocationRetrievalError(LocationError.LOCATION_ERROR)
                     return
                 }
-                onLocationRetrieved(locationResult.location)
+                onLocationRetrieved(locationResult.location!!)
             }
             Status.ERROR ->
                 onLocationRetrievalError(LocationError.LOCATION_ERROR)
@@ -88,5 +100,9 @@ abstract class EasyLocationBaseFragment : EasyLocationBasePermissionsFragment() 
                 onLocationRetrievalError(LocationError.LOCATION_PERMISSION_DENIED)
             }
         }
+    }
+
+    fun stopLocation() {
+        mEasyLocation.stopLocationUpdates()
     }
 }
