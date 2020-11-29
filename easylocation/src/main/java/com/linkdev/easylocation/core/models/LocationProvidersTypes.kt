@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation
+package com.linkdev.easylocation.core.models
 
-import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.LocationResult
-
-// Copyright (c) 2020 Link Development All rights reserved.
-interface IEasyLocationObserver {
-
+/**
+ * * // Copyright (c) 2020 LinkDev. All rights reserved.**/
+enum class LocationProvidersTypes {
     /**
-     * Used to subscribe for location updates using this [locationOptions].
+     * This Provider uses the FusedLocationProvider and Google Play Services to retrieve location.
+     *
+     * For more info check [https://developers.google.com/location-context/fused-location-provider]
      */
-    fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult>
-
-    /**
-     * Unsubscribe from the location updates.
-     */
-    fun stopLocationUpdates()
+    FUSED_LOCATION_PROVIDER,
 }

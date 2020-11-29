@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation
+package com.linkdev.easylocation.core.models
 
-import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.LocationResult
-
-// Copyright (c) 2020 Link Development All rights reserved.
-interface IEasyLocationObserver {
-
-    /**
-     * Used to subscribe for location updates using this [locationOptions].
-     */
-    fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult>
-
-    /**
-     * Unsubscribe from the location updates.
-     */
-    fun stopLocationUpdates()
+internal object EasyLocationConstants {
+    const val DEFAULT_MIN_DISTANCE: Float = 5F
+    const val DEFAULT_INTERVAL: Long = 5000
+    const val DEFAULT_FASTEST_INTERVAL: Long = 1000
+    const val DEFAULT_MAX_LOCATION_REQUEST_TIME: Long = 50000
+    const val INFINITE_REQUEST_TIME: Long = -1
+    val DEFAULT_LOCATION_REQUEST_TYPE: LocationRequestType = LocationRequestType.UPDATES
 }

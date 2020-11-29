@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation
+package com.linkdev.easylocation.core.location_providers
 
-import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
+import android.location.Location
 import com.linkdev.easylocation.core.models.LocationResult
 
-// Copyright (c) 2020 Link Development All rights reserved.
-interface IEasyLocationObserver {
+internal interface LocationResultListener {
 
-    /**
-     * Used to subscribe for location updates using this [locationOptions].
-     */
-    fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult>
+    fun onLocationRetrieved(location: Location)
 
-    /**
-     * Unsubscribe from the location updates.
-     */
-    fun stopLocationUpdates()
+    fun onLocationRetrievalError(locationResult: LocationResult?)
 }

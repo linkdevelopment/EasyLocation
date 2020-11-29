@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation
+package com.linkdev.easylocation.core.models
 
-import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.LocationResult
-
-// Copyright (c) 2020 Link Development All rights reserved.
-interface IEasyLocationObserver {
-
-    /**
-     * Used to subscribe for location updates using this [locationOptions].
-     */
-    fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult>
-
-    /**
-     * Unsubscribe from the location updates.
-     */
-    fun stopLocationUpdates()
+enum class Status {
+    SUCCESS,
+    UNKNOWN_ERROR,
+    PERMISSION_NOT_GRANTED,
 }

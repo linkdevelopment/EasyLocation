@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation
+package com.linkdev.easy_location_sample.utils
 
-import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.LocationResult
+/**
+ * * // Copyright (c) 2020 Linkdev. All rights reserved.**/
+object Constants {
+    const val LOCATE_TAG: String = "LOCATE_TAG"
+    const val STOP_TAG: String = "STOP_TAG"
 
-// Copyright (c) 2020 Link Development All rights reserved.
-interface IEasyLocationObserver {
-
-    /**
-     * Used to subscribe for location updates using this [locationOptions].
-     */
-    fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult>
-
-    /**
-     * Unsubscribe from the location updates.
-     */
-    fun stopLocationUpdates()
+    const val SAMPLE_LOCATION_ATTRIBUTES = "SAMPLE_LOCATION_ATTRIBUTES"
 }

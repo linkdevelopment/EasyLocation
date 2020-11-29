@@ -9,6 +9,5 @@
     <string name="stop_location">Stop location</string>
 
 
-    <string name="location_placeholder">_ - _</string>
-
+    <string name="location_placeholder">…</string>
 </resources>

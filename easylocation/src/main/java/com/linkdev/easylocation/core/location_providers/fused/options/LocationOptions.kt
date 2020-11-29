@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation
+package com.linkdev.easylocation.core.location_providers.fused.options
 
-import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.LocationResult
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-// Copyright (c) 2020 Link Development All rights reserved.
-interface IEasyLocationObserver {
-
-    /**
-     * Used to subscribe for location updates using this [locationOptions].
-     */
-    fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult>
-
-    /**
-     * Unsubscribe from the location updates.
-     */
-    fun stopLocationUpdates()
-}
+@Parcelize
+open class LocationOptions : Parcelable

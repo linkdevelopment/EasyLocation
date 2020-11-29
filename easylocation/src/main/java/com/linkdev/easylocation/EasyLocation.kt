@@ -18,56 +18,99 @@ package com.linkdev.easylocation
 import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
-import com.linkdev.easylocation.location_providers.LocationOptions
-import com.linkdev.easylocation.location_providers.LocationProvidersTypes
-import com.linkdev.easylocation.location_providers.LocationResult
-import com.linkdev.easylocation.utils.EasyLocationConstants
+import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
+import com.linkdev.easylocation.core.models.EasyLocationConstants
+import com.linkdev.easylocation.core.models.LocationProvidersTypes
+import com.linkdev.easylocation.core.models.LocationRequestType
+import com.linkdev.easylocation.core.models.LocationResult
+import com.linkdev.easylocation.lifecycle.EasyLocationLifeCycleObserver
 
-// Created by Mohammed Fareed on 9/27/2020.
-// Copyright (c) 2020 Link Development All rights reserved.
+/**
+ * EasyLocation is built to ease the frequent task of getting the user's location by using just a few lines of code, But providing a powerful, wide and compact features too.
+ *
+ * Has a private constructor to initialize [EasyLocation] you should use It's [EasyLocation.Builder]
+ */
 class EasyLocation private constructor(
     private val mContext: Context,
+    private val mLocationOptions: LocationOptions,
     private val mMaxLocationRequestTime: Long,
-    private val mSingleLocationRequest: Boolean
+    private val mLocationRequestType: LocationRequestType,
 ) {
 
+    /**
+     * The used adapter implementing [IEasyLocationObserver] Interface.
+     */
     private var mLocationObserver: IEasyLocationObserver? = null
 
-    fun requestLifecycleLocationUpdates(
-        lifecycle: Lifecycle,
-        locationProviderType: LocationProvidersTypes, locationOptions: LocationOptions
-    ): LiveData<LocationResult> {
-        mLocationObserver = EasyLocationLifeCycleObserver(lifecycle, mContext)
-        mLocationObserver?.setMaxLocationRequestTime(mMaxLocationRequestTime)
-        mLocationObserver?.setSingleLocationRequest(mSingleLocationRequest)
+    /**
+     * Requests the location using a [lifecycle] registry to handle the location stop on it's own.
+     *
+     * @param lifecycle The lifecycle that we should attach the location request to,
+     *                  So that we stop the location request if The lifecycle
+     *                  component is destroyed or dismissed.
+     */
+    fun requestLocationUpdates(lifecycle: Lifecycle): LiveData<LocationResult> {
+        mLocationObserver = EasyLocationLifeCycleObserver(
+            mContext, mMaxLocationRequestTime, mLocationRequestType
+        )
 
-        return mLocationObserver?.requestLocationUpdates(locationProviderType, locationOptions)!!
+        lifecycle.addObserver(mLocationObserver as EasyLocationLifeCycleObserver)
+
+        return mLocationObserver?.requestLocationUpdates(mLocationOptions)!!
     }
 
+    /**
+     * If invoked stops the location updates.
+     */
     fun stopLocationUpdates() {
         mLocationObserver?.stopLocationUpdates()
     }
 
-    // TODO: Let's talk about removing this Builder
-    class Builder(private val context: Context) {
+    /**
+     * This Builder is used to initialize the [EasyLocation] to register for location updates.
+     */
+    class Builder(private val context: Context, private val mLocationOptions: LocationOptions) {
+
+        /**
+         * Max location request time before sending location update failed if the location was not retrieved.
+         * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
+         */
         private var mMaxLocationRequestTime: Long =
             EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME
 
-        private var mSingleLocationRequest: Boolean =
-            EasyLocationConstants.DEFAULT_SINGLE_LOCATION_REQUEST
+        /**
+         * The location request type [LocationRequestType]
+         */
+        private var mLocationRequestType: LocationRequestType =
+            EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TYPE
 
+        /**
+         * Sets max location request time before sending location update failed if the location was not retrieved.
+         * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
+         */
         fun setMaxLocationRequestTime(maxLocationRequestTime: Long): Builder {
             mMaxLocationRequestTime = maxLocationRequestTime
             return this
         }
 
-        fun setSingleLocationRequest(singleLocationRequest: Boolean): Builder {
-            mSingleLocationRequest = singleLocationRequest
+        /**
+         * Sets the location request type.
+         */
+        fun setLocationRequestType(locationRequestType: LocationRequestType): Builder {
+            mLocationRequestType = locationRequestType
             return this
         }
 
+        /**
+         * Executes the builder and initializes the [EasyLocation] object using the provided parameters.
+         */
         fun build(): EasyLocation {
-            return EasyLocation(context, mMaxLocationRequestTime, mSingleLocationRequest)
+            return EasyLocation(
+                context,
+                mLocationOptions,
+                mMaxLocationRequestTime,
+                mLocationRequestType
+            )
         }
     }
 }
