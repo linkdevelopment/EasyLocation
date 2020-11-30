@@ -17,6 +17,5 @@ package com.linkdev.easylocation.core.models
 
 enum class Status {
     SUCCESS,
-    UNKNOWN_ERROR,
-    PERMISSION_NOT_GRANTED,
+    ERROR,
 }

@@ -53,7 +53,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     /**
      * Called when the location retrieved with an error.
      */
-    abstract fun onLocationRetrievalError(locationError: LocationError)
+    abstract fun onLocationRetrievalError(locationResultError: LocationResultError)
 
     /**
      * The entry point for [EasyLocationBaseFragment] after calling this method:
@@ -91,8 +91,8 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
         getLocation()
     }
 
-    override fun onLocationPermissionError(locationError: LocationError) {
-        onLocationRetrievalError(locationError)
+    override fun onLocationPermissionError(locationResultError: LocationResultError) {
+        onLocationRetrievalError(locationResultError)
     }
 
     private fun getLocation() {
@@ -109,16 +109,15 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
         when (locationResult.status) {
             Status.SUCCESS -> {
                 if (locationResult.location == null) {
-                    onLocationRetrievalError(LocationError.LOCATION_ERROR)
+                    onLocationRetrievalError(LocationResultError.UnknownError())
                     return
                 }
                 onLocationRetrieved(locationResult.location)
             }
-            Status.UNKNOWN_ERROR ->
-                onLocationRetrievalError(LocationError.LOCATION_ERROR)
-            Status.PERMISSION_NOT_GRANTED -> {
-                onLocationRetrievalError(LocationError.LOCATION_PERMISSION_DENIED)
-            }
+            Status.ERROR ->
+                onLocationRetrievalError(
+                    locationResult.locationResultError ?: LocationResultError.UnknownError()
+                )
         }
     }
 

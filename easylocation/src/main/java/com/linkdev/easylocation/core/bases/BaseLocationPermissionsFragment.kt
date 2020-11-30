@@ -28,7 +28,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.linkdev.easylocation.core.models.LocationError
+import com.linkdev.easylocation.core.models.LocationResultError
 
 /**
  * * // Copyright (c) 2020 LinkDev. All rights reserved.**/
@@ -44,7 +44,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
      */
     abstract fun onLocationPermissionsReady()
 
-    abstract fun onLocationPermissionError(locationError: LocationError)
+    abstract fun onLocationPermissionError(locationResultError: LocationResultError)
 
     abstract fun showLocationPermissionRationalDialog()
 
@@ -53,7 +53,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
     }
 
     private fun onLocationPermissionDenied() {
-        onLocationPermissionError(LocationError.LOCATION_PERMISSION_DENIED)
+        onLocationPermissionError(LocationResultError.PermissionDenied())
     }
 
     private fun onLocationSettingGranted() {
@@ -61,7 +61,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
     }
 
     private fun onLocationSettingDenied() {
-        onLocationPermissionError(LocationError.LOCATION_SETTING_DENIED)
+        onLocationPermissionError(LocationResultError.SettingDenied())
     }
 
     //* Location Permission *//
