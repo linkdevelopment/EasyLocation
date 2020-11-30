@@ -16,28 +16,20 @@
 package com.linkdev.easylocation.core.models
 
 import android.location.Location
-import java.lang.Exception
 
 sealed class LocationResult(
     val status: Status,
     val location: Location? = null,
-    val exception: Exception? = null
+    val locationResultError: LocationResultError? = null
 ) {
 
     class Success(location: Location) : LocationResult(Status.SUCCESS, location)
 
     /**
-     * Returned if the permission location permission was not granted.
-     *
-     * If you want us to handle the location permission check out [EasyLocationBaseFragment].
-     */
-    class LocationPermissionNotGranted : LocationResult(Status.PERMISSION_NOT_GRANTED)
-
-    /**
      * Returned when there is an unknown error from the provider when retrieving the location.
      *
-     * @param exception returning the exception if any
+     * @param locationResultError with the error returning
      */
-    class UnknownError(exception: Exception? = null) :
-        LocationResult(Status.UNKNOWN_ERROR, exception = exception)
+    class Error(locationResultError: LocationResultError? = null) :
+        LocationResult(Status.ERROR, locationResultError = locationResultError)
 }

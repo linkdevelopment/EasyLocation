@@ -31,8 +31,8 @@ import com.linkdev.easy_location_sample.model.SampleLocationAttributes
 import com.linkdev.easy_location_sample.utils.Constants
 import com.linkdev.easy_location_sample.utils.Utils
 import com.linkdev.easylocation.EasyLocationBaseFragment
-import com.linkdev.easylocation.core.models.LocationError
-import com.linkdev.easylocation.core.models.LocationProvidersTypes
+import com.linkdev.easylocation.core.models.LocationErrorCode
+import com.linkdev.easylocation.core.models.LocationResultError
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
@@ -84,19 +84,17 @@ class EasyLocationBaseSampleFragment : EasyLocationBaseFragment() {
         scrlLocation.fullScroll(View.FOCUS_DOWN)
     }
 
-    override fun onLocationRetrievalError(locationError: LocationError) {
-        when (locationError) {
-            LocationError.LOCATION_SETTING_DENIED ->
-                Toast.makeText(mContext, "Location setting denied", Toast.LENGTH_SHORT).show()
-            LocationError.LOCATION_PERMISSION_DENIED ->
-                Toast.makeText(mContext, "Location permission denied", Toast.LENGTH_SHORT)
+    override fun onLocationRetrievalError(locationResultError: LocationResultError) {
+        when (locationResultError.errorCode) {
+            LocationErrorCode.LOCATION_SETTING_DENIED,
+            LocationErrorCode.LOCATION_PERMISSION_DENIED,
+            LocationErrorCode.UNKNOWN_ERROR,
+            LocationErrorCode.TIME_OUT ->
+                Toast.makeText(mContext, locationResultError.errorMessage, Toast.LENGTH_LONG)
                     .show()
-            LocationError.LOCATION_ERROR ->
-                Toast.makeText(
-                    mContext,
-                    "Something went wrong and the location returned as null",
-                    Toast.LENGTH_SHORT
-                ).show()
+            LocationErrorCode.PROVIDER_EXCEPTION ->
+                Toast.makeText(mContext, locationResultError.exception?.message, Toast.LENGTH_LONG)
+                    .show()
         }
     }
 
@@ -132,7 +130,7 @@ class EasyLocationBaseSampleFragment : EasyLocationBaseFragment() {
                 Toast.makeText(
                     mContext,
                     "You will not be able to use this feature. ",
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
             }
         }

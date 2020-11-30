@@ -16,13 +16,14 @@
 package com.linkdev.easylocation.core.location_providers
 
 import android.content.Context
+import android.location.Location
 import android.os.Handler
+import android.os.Looper
+import com.linkdev.easylocation.core.location_providers.fused.FusedLocationProvider
 import com.linkdev.easylocation.core.location_providers.fused.options.DisplacementLocationOptions
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.location_providers.fused.FusedLocationProvider
 import com.linkdev.easylocation.core.location_providers.fused.options.TimeLocationOptions
-import com.linkdev.easylocation.core.models.LocationProvidersTypes
-import com.linkdev.easylocation.core.models.LocationRequestType
+import com.linkdev.easylocation.core.models.*
 import com.linkdev.easylocation.core.models.EasyLocationConstants
 
 /**
@@ -42,7 +43,7 @@ internal class LocationProvidersFactory(
 ) {
 
     private lateinit var mILocationProvider: ILocationProvider
-    private var mLocationRequestTimeoutHandler: Handler = Handler()
+    private var mLocationRequestTimeoutHandler: Handler = Handler(Looper.getMainLooper())
 
     /**
      * Requests location updates from the [locationProvider] using [locationOptions].
@@ -61,9 +62,6 @@ internal class LocationProvidersFactory(
     ) {
         when (locationProvider) {
             LocationProvidersTypes.FUSED_LOCATION_PROVIDER -> {
-                require(locationOptions is LocationOptions) {
-                    "Fused location provider options not found should be [DisplacementFusedLocationOptions, TimeFusedLocationOptions]"
-                }
                 startFusedLocationUpdates(locationOptions)
             }
         }
@@ -79,14 +77,31 @@ internal class LocationProvidersFactory(
      * @return LiveData object to listen for location updates with [LocationResult].
      */
     private fun startFusedLocationUpdates(LocationOptions: LocationOptions) {
-        if (mLocationRequestType == LocationRequestType.ONE_TIME_REQUEST)
-            startLocationRequestTimer()
+        startLocationRequestTimer()
         requestFusedLocationUpdates(LocationOptions)
     }
 
     private fun requestFusedLocationUpdates(LocationOptions: LocationOptions) {
         mILocationProvider = FusedLocationProvider(mContext, LocationOptions)
-        mILocationProvider.requestLocationUpdates(mLocationResultListener)
+        (mILocationProvider as FusedLocationProvider).requestLocationUpdates(onLocationRetrieved())
+    }
+
+    private fun onLocationRetrieved(): LocationResultListener {
+        return object : LocationResultListener {
+            override fun onLocationRetrieved(location: Location) {
+                if (mLocationRequestType == LocationRequestType.ONE_TIME_REQUEST)
+                    stopLocationUpdates()
+
+                mLocationRequestTimeoutHandler.removeCallbacks(runnable)
+                mLocationRequestTimeoutHandler.postDelayed(runnable, mMaxLocationRequestTime)
+
+                mLocationResultListener.onLocationRetrieved(location)
+            }
+
+            override fun onLocationRetrievalError(locationResult: LocationResult?) {
+                mLocationResultListener.onLocationRetrievalError(locationResult)
+            }
+        }
     }
 
     fun stopLocationUpdates() {
@@ -104,6 +119,6 @@ internal class LocationProvidersFactory(
 
     private val runnable: Runnable = Runnable {
         stopLocationUpdates()
-        mILocationProvider.fetchLatestKnownLocation()
+        mLocationResultListener.onLocationRetrievalError(LocationResult.Error(LocationResultError.TimeoutError()))
     }
 }

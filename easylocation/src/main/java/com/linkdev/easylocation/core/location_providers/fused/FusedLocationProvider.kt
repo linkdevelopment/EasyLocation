@@ -30,6 +30,7 @@ import com.linkdev.easylocation.core.location_providers.LocationResultListener
 import com.linkdev.easylocation.core.location_providers.fused.options.DisplacementLocationOptions
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.location_providers.fused.options.TimeLocationOptions
+import com.linkdev.easylocation.core.models.LocationResultError
 import com.linkdev.easylocation.core.utils.LocationUtils
 
 /**
@@ -49,7 +50,7 @@ internal class FusedLocationProvider(
     @SuppressLint("MissingPermission")
     override fun requestLocationUpdates(locationResultListener: LocationResultListener) {
         if (!LocationUtils.locationPermissionGranted(mContext)) {
-            mLocationResultListener.onLocationRetrievalError(LocationResult.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrievalError(LocationResult.Error(LocationResultError.PermissionDenied()))
             return
         }
         mLocationResultListener = locationResultListener
@@ -66,7 +67,7 @@ internal class FusedLocationProvider(
     @SuppressLint("MissingPermission")
     override fun fetchLatestKnownLocation() {
         if (!LocationUtils.locationPermissionGranted(mContext)) {
-            mLocationResultListener.onLocationRetrievalError(LocationResult.LocationPermissionNotGranted())
+            mLocationResultListener.onLocationRetrievalError(LocationResult.Error(LocationResultError.PermissionDenied()))
             return
         }
 
@@ -80,7 +81,7 @@ internal class FusedLocationProvider(
     private val mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: com.google.android.gms.location.LocationResult?) {
             if (locationResult == null) {
-                mLocationResultListener.onLocationRetrievalError(LocationResult.UnknownError(locationResult))
+                mLocationResultListener.onLocationRetrievalError(LocationResult.Error())
                 return
             }
             locationResult.locations.forEach {
@@ -93,7 +94,7 @@ internal class FusedLocationProvider(
         if (locationTask.isSuccessful)
             mLocationResultListener.onLocationRetrieved(locationTask.result)
         else
-            mLocationResultListener.onLocationRetrievalError(LocationResult.UnknownError(locationTask.exception))
+            mLocationResultListener.onLocationRetrievalError(LocationResult.Error(LocationResultError.ProviderException(locationTask.exception)))
     }
 
     private fun createLocationRequest(locationOptions: LocationOptions): LocationRequest {

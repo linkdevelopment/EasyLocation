@@ -28,8 +28,9 @@ import com.linkdev.easy_location_sample.model.SampleLocationAttributes
 import com.linkdev.easy_location_sample.utils.Constants
 import com.linkdev.easy_location_sample.utils.Utils
 import com.linkdev.easylocation.EasyLocation
-import com.linkdev.easylocation.core.models.LocationError
+import com.linkdev.easylocation.core.models.LocationErrorCode
 import com.linkdev.easylocation.core.models.LocationResult
+import com.linkdev.easylocation.core.models.LocationResultError
 import com.linkdev.easylocation.core.models.Status
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
@@ -84,16 +85,15 @@ class EasyLocationSampleFragment : Fragment() {
         when (locationResult.status) {
             Status.SUCCESS -> {
                 if (locationResult.location == null) {
-                    onLocationRetrievalError(LocationError.LOCATION_ERROR)
+                    onLocationRetrievalError(LocationResultError.UnknownError())
                     return
                 }
                 onLocationRetrieved(locationResult.location!!)
             }
-            Status.UNKNOWN_ERROR ->
-                onLocationRetrievalError(LocationError.LOCATION_ERROR)
-            Status.PERMISSION_NOT_GRANTED -> {
-                onLocationRetrievalError(LocationError.LOCATION_PERMISSION_DENIED)
-            }
+            Status.ERROR ->
+                onLocationRetrievalError(
+                    locationResult.locationResultError ?: LocationResultError.UnknownError()
+                )
         }
     }
 
@@ -103,19 +103,17 @@ class EasyLocationSampleFragment : Fragment() {
         scrlLocation.fullScroll(View.FOCUS_DOWN)
     }
 
-    private fun onLocationRetrievalError(locationError: LocationError) {
-        when (locationError) {
-            LocationError.LOCATION_SETTING_DENIED ->
-                Toast.makeText(mContext, "Needs Location setting", Toast.LENGTH_SHORT).show()
-            LocationError.LOCATION_PERMISSION_DENIED ->
-                Toast.makeText(mContext, "Needs Location permission", Toast.LENGTH_SHORT)
+    private fun onLocationRetrievalError(locationResultError: LocationResultError) {
+        when (locationResultError.errorCode) {
+            LocationErrorCode.LOCATION_SETTING_DENIED,
+            LocationErrorCode.LOCATION_PERMISSION_DENIED,
+            LocationErrorCode.UNKNOWN_ERROR,
+            LocationErrorCode.TIME_OUT ->
+                Toast.makeText(mContext, locationResultError.errorMessage, Toast.LENGTH_LONG)
                     .show()
-            LocationError.LOCATION_ERROR ->
-                Toast.makeText(
-                    mContext,
-                    "Something went wrong and the location returned as null",
-                    Toast.LENGTH_SHORT
-                ).show()
+            LocationErrorCode.PROVIDER_EXCEPTION ->
+                Toast.makeText(mContext, locationResultError.exception?.message, Toast.LENGTH_LONG)
+                    .show()
         }
     }
 }
