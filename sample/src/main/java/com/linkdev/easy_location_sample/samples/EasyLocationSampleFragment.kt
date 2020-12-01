@@ -98,8 +98,7 @@ class EasyLocationSampleFragment : Fragment() {
     }
 
     private fun onLocationRetrieved(location: Location) {
-        val string = Utils.getLocationString(location)
-        txtLocation.append(string)
+        Utils.setLocationText(location, txtLocation)
         scrlLocation.fullScroll(View.FOCUS_DOWN)
     }
 

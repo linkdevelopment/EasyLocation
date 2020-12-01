@@ -21,7 +21,9 @@ import android.graphics.Color
 import android.location.Location
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,16 +42,21 @@ object Utils {
                 .show()
     }
 
-    fun getLocationString(location: Location): String {
+    fun setLocationText(location: Location, txtLocation: TextView) {
         val latLng = String.format(
             Locale.ENGLISH, "%f - %f",
             location.latitude, location.longitude
         )
+        val spannableStringBuilder = SpannableStringBuilder("${txtLocation.text}\n\n")
+
         val spannableString = SpannableString(latLng)
         spannableString.setSpan(
             ForegroundColorSpan(Color.BLUE), 0, latLng.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        return "\n\n$spannableString    ${getCurrentTime()}"
+
+        spannableStringBuilder.append(spannableString)
+        spannableStringBuilder.append(" / ${getCurrentTime()}")
+        txtLocation.setText(spannableStringBuilder, TextView.BufferType.SPANNABLE)
     }
 
     private fun getCurrentTime(): String {
