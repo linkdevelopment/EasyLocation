@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easy_location_sample
+package com.linkdev.easylocationsample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import com.linkdev.easy_location_sample.model.SampleLocationAttributes
 
 class LocationMainActivity : AppCompatActivity(),
     LocationMainFragment.ILocationMainFragmentListener {

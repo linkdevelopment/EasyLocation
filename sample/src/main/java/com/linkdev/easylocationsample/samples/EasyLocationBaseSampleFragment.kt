@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easy_location_sample.samples
+package com.linkdev.easylocationsample.samples
 
 import android.content.Context
 import android.content.DialogInterface
@@ -26,10 +26,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.linkdev.easy_location_sample.R
-import com.linkdev.easy_location_sample.model.SampleLocationAttributes
-import com.linkdev.easy_location_sample.utils.Constants
-import com.linkdev.easy_location_sample.utils.Utils
+import com.linkdev.easylocationsample.R
+import com.linkdev.easylocationsample.model.SampleLocationAttributes
+import com.linkdev.easylocationsample.utils.Constants
+import com.linkdev.easylocationsample.utils.Utils
 import com.linkdev.easylocation.EasyLocationBaseFragment
 import com.linkdev.easylocation.core.models.LocationErrorCode
 import com.linkdev.easylocation.core.models.LocationResultError

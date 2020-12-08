@@ -1,4 +1,4 @@
-package com.linkdev.easy_location_sample.model
+package com.linkdev.easylocationsample.model
 
 import android.os.Parcelable
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions

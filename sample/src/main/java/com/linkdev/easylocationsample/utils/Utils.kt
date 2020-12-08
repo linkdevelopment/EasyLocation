@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easy_location_sample.utils
+package com.linkdev.easylocationsample.utils
 
 import android.content.Context
 import android.content.DialogInterface

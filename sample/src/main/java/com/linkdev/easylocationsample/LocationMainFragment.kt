@@ -1,4 +1,4 @@
-package com.linkdev.easy_location_sample
+package com.linkdev.easylocationsample
 
 import android.content.Context
 import android.os.Bundle
@@ -9,9 +9,9 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.LocationRequest
-import com.linkdev.easy_location_sample.model.SampleLocationAttributes
-import com.linkdev.easy_location_sample.samples.EasyLocationBaseSampleFragment
-import com.linkdev.easy_location_sample.samples.EasyLocationSampleFragment
+import com.linkdev.easylocationsample.model.SampleLocationAttributes
+import com.linkdev.easylocationsample.samples.EasyLocationBaseSampleFragment
+import com.linkdev.easylocationsample.samples.EasyLocationSampleFragment
 import com.linkdev.easylocation.core.location_providers.fused.options.DisplacementLocationOptions
 import com.linkdev.easylocation.core.location_providers.fused.options.TimeLocationOptions
 import com.linkdev.easylocation.core.models.LocationRequestType
