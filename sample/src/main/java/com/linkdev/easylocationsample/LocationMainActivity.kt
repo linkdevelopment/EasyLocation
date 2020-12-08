@@ -33,15 +33,18 @@ class LocationMainActivity : AppCompatActivity(),
         if (savedInstanceState == null)
             replaceFragment(
                 LocationMainFragment.newInstance(),
-                LocationMainFragment.TAG
+                LocationMainFragment.TAG,
+                false
             )
     }
 
-    private fun replaceFragment(fragment: Fragment, tag: String) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.flFragmentContainer, fragment, tag)
-            .addToBackStack(null)
-            .commit()
+    private fun replaceFragment(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragmentContainer, fragment, tag)
+            if (addToBackStack)
+                addToBackStack(null)
+            commit()
+        }
     }
 
     override fun onSampleClicked(fragment: Fragment, tag: String) {
