@@ -33,22 +33,22 @@ import com.linkdev.easylocationsample.utils.Utils
 import com.linkdev.easylocation.EasyLocationBaseFragment
 import com.linkdev.easylocation.core.models.LocationErrorCode
 import com.linkdev.easylocation.core.models.LocationResultError
+import com.linkdev.easylocationsample.OptionsFragment
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
  * This sample Fragment is sampling the use of [EasyLocationBaseFragment].
  */
-class EasyLocationBaseSampleFragment : EasyLocationBaseFragment() {
+class EasyLocationBaseSampleFragment : EasyLocationBaseFragment(), OptionsFragment.OnOptionsFragmentInteraction {
 
     private lateinit var mContext: Context
 
     companion object {
         const val TAG = "EasyLocationBaseSampleFragment"
 
-        fun newInstance(sampleLocationAttributes: SampleLocationAttributes): EasyLocationBaseSampleFragment {
+        fun newInstance(): EasyLocationBaseSampleFragment {
             return EasyLocationBaseSampleFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(Constants.SAMPLE_LOCATION_ATTRIBUTES, sampleLocationAttributes)
                 }
             }
         }
@@ -66,8 +66,16 @@ class EasyLocationBaseSampleFragment : EasyLocationBaseFragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null)
             mContext = requireActivity()
+    }
 
-        requestLocation(arguments?.get(Constants.SAMPLE_LOCATION_ATTRIBUTES) as SampleLocationAttributes)
+    override fun onLocateClicked(locationAttributes: SampleLocationAttributes) {
+        requestLocation(locationAttributes)
+    }
+
+    override fun onStopLocation() {
+        stopLocation()
+
+        txtLocation.text = getString(R.string.location_placeholder)
     }
 
     private fun requestLocation(sampleLocationAttributes: SampleLocationAttributes) {
@@ -134,4 +142,5 @@ class EasyLocationBaseSampleFragment : EasyLocationBaseFragment() {
             }
         }
     }
+
 }

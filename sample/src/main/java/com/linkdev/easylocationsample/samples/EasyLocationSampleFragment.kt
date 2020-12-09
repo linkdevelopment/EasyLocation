@@ -32,12 +32,13 @@ import com.linkdev.easylocation.core.models.LocationErrorCode
 import com.linkdev.easylocation.core.models.LocationResult
 import com.linkdev.easylocation.core.models.LocationResultError
 import com.linkdev.easylocation.core.models.Status
+import com.linkdev.easylocationsample.OptionsFragment
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
  * This sample Fragment is sampling the use of [EasyLocation].
  */
-class EasyLocationSampleFragment : Fragment() {
+class EasyLocationSampleFragment : Fragment(), OptionsFragment.OnOptionsFragmentInteraction {
 
     private lateinit var mContext: Context
 
@@ -46,10 +47,9 @@ class EasyLocationSampleFragment : Fragment() {
     companion object {
         const val TAG = "EasyLocationSampleFragment"
 
-        fun newInstance(sampleLocationAttributes: SampleLocationAttributes): EasyLocationSampleFragment {
+        fun newInstance(): EasyLocationSampleFragment {
             return EasyLocationSampleFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(Constants.SAMPLE_LOCATION_ATTRIBUTES, sampleLocationAttributes)
                 }
             }
         }
@@ -67,8 +67,16 @@ class EasyLocationSampleFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null)
             mContext = requireActivity()
+    }
 
-        requestLocation(arguments?.get(Constants.SAMPLE_LOCATION_ATTRIBUTES) as SampleLocationAttributes)
+    override fun onLocateClicked(locationAttributes: SampleLocationAttributes) {
+        requestLocation(locationAttributes)
+    }
+
+    override fun onStopLocation() {
+        stopLocation()
+
+        txtLocation.text = getString(R.string.location_placeholder)
     }
 
     private fun requestLocation(sampleLocationAttributes: SampleLocationAttributes) {
@@ -79,6 +87,11 @@ class EasyLocationSampleFragment : Fragment() {
 
         mEasyLocation.requestLocationUpdates(lifecycle)
             .observe(this@EasyLocationSampleFragment, this::onLocationStatusRetrieved)
+    }
+
+    private fun stopLocation() {
+        if (::mEasyLocation.isInitialized)
+            mEasyLocation.stopLocationUpdates()
     }
 
     private fun onLocationStatusRetrieved(locationResult: LocationResult) {
