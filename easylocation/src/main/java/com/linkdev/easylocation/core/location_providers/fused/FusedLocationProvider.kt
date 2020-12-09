@@ -49,12 +49,12 @@ internal class FusedLocationProvider(
 
     @SuppressLint("MissingPermission")
     override fun requestLocationUpdates(locationResultListener: LocationResultListener) {
+        mLocationResultListener = locationResultListener
+
         if (!LocationUtils.locationPermissionGranted(mContext)) {
             mLocationResultListener.onLocationRetrievalError(LocationResult.Error(LocationResultError.PermissionDenied()))
             return
         }
-        mLocationResultListener = locationResultListener
-
         val locationRequest = createLocationRequest(mLocationOptions)
 
         mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper())
