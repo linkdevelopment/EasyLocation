@@ -17,6 +17,7 @@ package com.linkdev.easylocation.core.location_providers.fused.options
 
 import com.google.android.gms.location.LocationRequest
 import com.linkdev.easylocation.core.models.EasyLocationConstants
+import com.linkdev.easylocation.core.models.Priority
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -32,5 +33,5 @@ import kotlinx.android.parcel.Parcelize
 class DisplacementLocationOptions(
     val smallestDisplacement: Float = EasyLocationConstants.DEFAULT_MIN_DISTANCE,
     val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
-    val priority: Int = LocationRequest.PRIORITY_HIGH_ACCURACY
+    val priority: Priority = EasyLocationConstants.DEFAULT_PRIORITY
 ) : LocationOptions()

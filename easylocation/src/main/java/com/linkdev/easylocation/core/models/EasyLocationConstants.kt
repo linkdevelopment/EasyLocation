@@ -15,11 +15,32 @@
  */
 package com.linkdev.easylocation.core.models
 
+import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
+import com.linkdev.easylocation.core.location_providers.fused.options.TimeLocationOptions
+
 internal object EasyLocationConstants {
     const val DEFAULT_MIN_DISTANCE: Float = 5F
     const val DEFAULT_INTERVAL: Long = 5000
     const val DEFAULT_FASTEST_INTERVAL: Long = 1000
-    const val DEFAULT_MAX_LOCATION_REQUEST_TIME: Long = 50000
+    const val DEFAULT_LOCATION_REQUEST_TIMEOUT: Long = 50000
+    val DEFAULT_PRIORITY: Priority = Priority.PRIORITY_HIGH_ACCURACY
     const val INFINITE_REQUEST_TIME: Long = -1
     val DEFAULT_LOCATION_REQUEST_TYPE: LocationRequestType = LocationRequestType.UPDATES
+
+    val DEFAULT_FUSED_OPTIONS: LocationOptions = TimeLocationOptions()
+
+    object ErrorMessages {
+        const val UNKNOWN_PROVIDER =
+            "You are using an unknown provider should be [FusedLocationProvider]"
+        const val FUSED_OPTIONS_TYPE_ERROR =
+            "Fused location options should be one of [DisplacementFusedLocationOptions, TimeFusedLocationOptions]"
+        const val TIMEOUT_ERROR =
+            "Location request timed out without any response from the provider with these options"
+        const val UNKNOWN_ERROR =
+            "An unknown error has occurred"
+        const val LOCATION_PERMISSION_ERROR =
+            "Location permission was not provided, To use this feature enable and try again."
+        const val LOCATION_SETTING_ERROR =
+            "Location settings was not enabled, To use this feature enable and try again."
+    }
 }

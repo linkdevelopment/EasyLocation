@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkdev.easylocation.core.bases
+package com.linkdev.easylocationsample.samples
 
 import android.Manifest
 import android.app.Activity
@@ -22,34 +22,188 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.location.Location
 import android.location.LocationManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.linkdev.easylocation.R
-import com.linkdev.easylocation.core.models.LocationResultError
-import com.linkdev.easylocation.core.utils.EasyLocationUtils
-
+import com.linkdev.easylocation.EasyLocation
+import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
+import com.linkdev.easylocation.core.models.*
+import com.linkdev.easylocation.core.models.LocationResult
+import com.linkdev.easylocationsample.R
+import com.linkdev.easylocationsample.options.OnOptionsFragmentInteraction
+import com.linkdev.easylocationsample.options.OptionsFragment
+import com.linkdev.easylocationsample.samples.adapter.SamplesAdapter
+import com.linkdev.easylocationsample.utils.Utils
+import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
- * This class is used with [EasyLocationBaseFragment] to handle all of the location permissions and settings checks.
- **/
-abstract class BaseLocationPermissionsFragment : Fragment() {
+ * This sample Fragment is sampling the use of [EasyLocation].
+ */
+class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
+
+    private lateinit var mContext: Context
+
+    private lateinit var mEasyLocation: EasyLocation
+    private lateinit var mOptionsFragment: OptionsFragment
+
+    private lateinit var mAdapter: SamplesAdapter
+
+    private lateinit var requestType: LocationRequestType
+    private lateinit var locationOptions: LocationOptions
+    private var maxRequestTime: Long = 0
+    private var fetchLastKnownLocation: Boolean = false
 
     companion object {
+        const val TAG = "EasyLocationSampleFragment"
         private const val MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1
         private const val REQUEST_CODE_LOCATION_SETTINGS = 2000
+
+        fun newInstance(): SampleEasyLocationFragment {
+            return SampleEasyLocationFragment().apply {
+                arguments = Bundle().apply {
+                }
+            }
+        }
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.location_sample_fragment, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (activity != null)
+            mContext = requireActivity()
+
+        mOptionsFragment =
+            childFragmentManager.findFragmentById(R.id.optionsFragment) as OptionsFragment
+
+        initAdapter()
+    }
+
+    private fun initAdapter() {
+        mAdapter = SamplesAdapter(mContext, arrayListOf())
+
+        rvLocation.layoutManager = LinearLayoutManager(mContext)
+        rvLocation.adapter = mAdapter
+    }
+
+    override fun onLocateClicked(
+        requestType: LocationRequestType,
+        locationOptions: LocationOptions,
+        maxRequestTime: Long,
+        fetchLastKnownLocation: Boolean
+    ) {
+        this.requestType = requestType
+        this.locationOptions = locationOptions
+        this.maxRequestTime = maxRequestTime
+        this.fetchLastKnownLocation = fetchLastKnownLocation
+
+        mAdapter.clear()
+
+        checkLocationPermissions(mContext, "Location Permission is required!")
+    }
+
+    override fun onStopLocation() {
+        stopLocation()
+    }
+
+    private fun requestLocation(
+        requestType: LocationRequestType,
+        locationOptions: LocationOptions,
+        maxRequestTime: Long,
+        fetchLastKnownLocation: Boolean
+    ) {
+        mEasyLocation = EasyLocation.Builder(mContext, locationOptions)
+            .setMaxLocationRequestTime(maxRequestTime)
+            .setLocationRequestType(requestType)
+            .build()
+
+        if (fetchLastKnownLocation)
+            mEasyLocation.fetchLatestKnownLocation(lifecycle)
+                .observe(this@SampleEasyLocationFragment, this::onLocationStatusRetrieved)
+        else
+            mEasyLocation.requestLocationUpdates(lifecycle)
+                .observe(this@SampleEasyLocationFragment, this::onLocationStatusRetrieved)
+    }
+
+    private fun stopLocation() {
+        if (::mEasyLocation.isInitialized)
+            mEasyLocation.stopLocationUpdates()
+    }
+
+    private fun onLocationStatusRetrieved(locationResult: LocationResult) {
+        when (locationResult.status) {
+            Status.SUCCESS -> {
+                if (locationResult.location == null) {
+                    onLocationRetrievalError(LocationResultError.UnknownError())
+                    return
+                }
+                onLocationRetrieved(locationResult.location!!)
+            }
+            Status.ERROR ->
+                onLocationRetrievalError(
+                    locationResult.locationResultError ?: LocationResultError.UnknownError()
+                )
+        }
+    }
+
+    private fun onLocationRetrieved(location: Location) {
+        if (requestType == LocationRequestType.ONE_TIME_REQUEST) {
+            mOptionsFragment.showLocateButton(true)
+            mOptionsFragment.showStopLocationButton(false)
+        }
+
+        mAdapter.addItem(location)
+    }
+
+    private fun onLocationRetrievalError(locationResultError: LocationResultError) {
+        mOptionsFragment.showLocateButton(true)
+        mOptionsFragment.showStopLocationButton(false)
+
+        when (locationResultError.errorCode) {
+            LocationErrorCode.LOCATION_SETTING_DENIED,
+            LocationErrorCode.LOCATION_PERMISSION_DENIED,
+            LocationErrorCode.UNKNOWN_ERROR,
+            LocationErrorCode.TIME_OUT ->
+                Toast.makeText(mContext, locationResultError.errorMessage, Toast.LENGTH_LONG)
+                    .show()
+            LocationErrorCode.PROVIDER_EXCEPTION ->
+                Toast.makeText(mContext, locationResultError.exception?.message, Toast.LENGTH_LONG)
+                    .show()
+        }
+    }
+
+
+    /**
+     * TODO: The Next part is to handle the permissions and the settings.
+     */
 
     /**
      * Called when both LocationPermission and locationSetting are granted.
      */
-    abstract fun onLocationPermissionsReady()
+    private fun onLocationPermissionsReady() {
+        requestLocation(requestType, locationOptions, maxRequestTime, fetchLastKnownLocation)
+    }
 
-    abstract fun onLocationPermissionError(locationResultError: LocationResultError)
+    private fun onLocationPermissionError(locationResultError: LocationResultError) {
+        onLocationRetrievalError(locationResultError)
+    }
 
     private fun onLocationPermissionGranted() {
         checkLocationSettings(activity)
@@ -87,7 +241,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
 
     private fun checkLocationSelfPermission(context: Context?): Boolean {
         return ActivityCompat.checkSelfPermission(
-            context!!, Manifest.permission.ACCESS_FINE_LOCATION
+            mContext, Manifest.permission.ACCESS_FINE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
     }
 
@@ -111,7 +265,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val task =
-            LocationServices.getSettingsClient(context!!).checkLocationSettings(builder.build())
+            LocationServices.getSettingsClient(mContext).checkLocationSettings(builder.build())
         task.addOnCompleteListener { task1: Task<LocationSettingsResponse?> ->
             try { // All location settings are satisfied. The client can initialize location requests here.
                 task1.getResult(ApiException::class.java)
@@ -148,7 +302,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
             if (resultCode == Activity.RESULT_OK) {
-                if (!isLocationEnabled(activity!!)) {
+                if (!isLocationEnabled(mContext)) {
                     onLocationSettingDenied()
                 } else {
                     onLocationSettingGranted()
@@ -169,10 +323,13 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
         }
     }
 
-    open fun showLocationPermissionRationalDialog(rationaleDialogMessage: String) {
-        val alertDialog = EasyLocationUtils.showBasicDialog(
-            context, null, rationaleDialogMessage,
-            getString(R.string.cont), getString(R.string.cancel),
+    private fun showLocationPermissionRationalDialog(rationaleDialogMessage: String) {
+        Utils.showBasicDialog(
+            context,
+            null,
+            rationaleDialogMessage,
+            getString(com.linkdev.easylocation.R.string.cont),
+            getString(com.linkdev.easylocation.R.string.cancel),
             this::onLocationPermissionDialogInteraction
         ).setOnCancelListener { dialogInterface ->
             onLocationPermissionDialogInteraction(

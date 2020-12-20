@@ -15,7 +15,10 @@
  */
 package com.linkdev.easylocation
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.location.Location
+import androidx.annotation.RequiresPermission
 import com.linkdev.easylocation.core.bases.BaseLocationPermissionsFragment
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.*
@@ -34,16 +37,12 @@ import kotlin.properties.Delegates
  */
 abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
 
+    private var mFetchLastKnownLocation: Boolean = false
     private lateinit var mEasyLocation: EasyLocation
 
     private lateinit var mLocationOptions: LocationOptions
     private var mLocationRequestType by Delegates.notNull<LocationRequestType>()
     private var mMaxLocationRequestTime by Delegates.notNull<Long>()
-
-    override fun onDestroy() {
-        stopLocation()
-        super.onDestroy()
-    }
 
     /**
      * Called when both LocationPermission and locationSetting are granted.
@@ -78,15 +77,19 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     protected fun getLocation(
         locationOptions: LocationOptions,
         locationRequestType: LocationRequestType = LocationRequestType.UPDATES,
-        maxLocationRequestTime: Long = 50000
+        fetchLastKnownLocation: Boolean = false,
+        maxLocationRequestTime: Long = 50000,
+        rationaleDialogMessage: String = getString(R.string.easy_location_rationale_message)
     ) {
         mLocationOptions = locationOptions
         mLocationRequestType = locationRequestType
         mMaxLocationRequestTime = maxLocationRequestTime
+        mFetchLastKnownLocation = fetchLastKnownLocation
 
-        checkLocationPermissions(activity)
+        checkLocationPermissions(activity, rationaleDialogMessage)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onLocationPermissionsReady() {
         getLocation()
     }
@@ -95,14 +98,19 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
         onLocationRetrievalError(locationResultError)
     }
 
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun getLocation() {
         mEasyLocation = EasyLocation.Builder(context!!, mLocationOptions)
             .setMaxLocationRequestTime(mMaxLocationRequestTime)
             .setLocationRequestType(mLocationRequestType)
             .build()
 
-        mEasyLocation.requestLocationUpdates(lifecycle)
-            .observe(this, this::onLocationStatusRetrieved)
+        if (mFetchLastKnownLocation)
+            mEasyLocation.fetchLatestKnownLocation(lifecycle)
+                .observe(this, this::onLocationStatusRetrieved)
+        else
+            mEasyLocation.requestLocationUpdates(lifecycle)
+                .observe(this, this::onLocationStatusRetrieved)
     }
 
     private fun onLocationStatusRetrieved(locationResult: LocationResult) {
@@ -124,5 +132,10 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     fun stopLocation() {
         if (::mEasyLocation.isInitialized)
             mEasyLocation.stopLocationUpdates()
+    }
+
+    override fun onDestroy() {
+        stopLocation()
+        super.onDestroy()
     }
 }

@@ -31,17 +31,6 @@ import kotlin.reflect.KFunction2
 
 object Utils {
 
-    fun showBasicDialog(context: Context?, title: String?, message: String?,
-                        positiveButton: String?, negativeButton: String?,
-                        onDialogInteraction: KFunction2<@ParameterName(name = "dialogInterface") DialogInterface, @ParameterName(name = "which") Int, Unit>): AlertDialog {
-        return AlertDialog.Builder(context!!)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButton, onDialogInteraction)
-                .setNegativeButton(negativeButton, onDialogInteraction)
-                .show()
-    }
-
     fun setLocationText(location: Location, txtLocation: TextView) {
         val latLng = String.format(
             Locale.ENGLISH, "%f - %f",
@@ -62,5 +51,20 @@ object Utils {
     private fun getCurrentTime(): String {
         val date = Date()
         return SimpleDateFormat("hh:mm:ss").format(date)
+    }
+
+    fun showBasicDialog(
+        context: Context?, title: String?, message: String?,
+        positiveButton: String?, negativeButton: String?,
+        onDialogInteraction: KFunction2<@ParameterName(name = "dialogInterface") DialogInterface, @ParameterName(
+            name = "which"
+        ) Int, Unit>
+    ): AlertDialog {
+        return AlertDialog.Builder(context!!)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButton, onDialogInteraction)
+            .setNegativeButton(negativeButton, onDialogInteraction)
+            .show()
     }
 }

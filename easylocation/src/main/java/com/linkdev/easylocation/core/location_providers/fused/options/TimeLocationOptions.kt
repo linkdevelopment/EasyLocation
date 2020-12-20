@@ -17,13 +17,14 @@ package com.linkdev.easylocation.core.location_providers.fused.options
 
 import com.google.android.gms.location.LocationRequest
 import com.linkdev.easylocation.core.models.EasyLocationConstants
+import com.linkdev.easylocation.core.models.Priority
 import kotlinx.android.parcel.Parcelize
 
 /**
  *  Options for using [FusedLocationProvider]
  *
  * @param interval Desired interval for every location update in milliSeconds<p> @defaults_to 3 Seconds.
- * @param priority Get the quality of the request @defaults_to LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY.
+ * @param priority Get the quality of the request @defaults_to [EasyLocationConstants.DEFAULT_PRIORITY].
  * @param fastestInterval Get the fastest interval of this request, in milliseconds, The system will never provide
  *                  location updates faster than it.<p> @defaults_to 2 milliseconds.
  */
@@ -31,5 +32,5 @@ import kotlinx.android.parcel.Parcelize
 class TimeLocationOptions(
     val interval: Long = EasyLocationConstants.DEFAULT_INTERVAL,
     val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
-    val priority: Int = LocationRequest.PRIORITY_HIGH_ACCURACY,
+    val priority: Priority = EasyLocationConstants.DEFAULT_PRIORITY,
 ) : LocationOptions()

@@ -23,13 +23,18 @@ sealed class LocationResult(
     val locationResultError: LocationResultError? = null
 ) {
 
+    /**
+     * Returns the [location] of the device.
+     *
+     * @param location the location result
+     */
     class Success(location: Location) : LocationResult(Status.SUCCESS, location)
 
     /**
-     * Returned when there is an unknown error from the provider when retrieving the location.
+     * Returned when there is an error while retrieving the location.
      *
      * @param locationResultError with the error returning
      */
-    class Error(locationResultError: LocationResultError? = null) :
+    class Error(locationResultError: LocationResultError? = LocationResultError.UnknownError()) :
         LocationResult(Status.ERROR, locationResultError = locationResultError)
 }

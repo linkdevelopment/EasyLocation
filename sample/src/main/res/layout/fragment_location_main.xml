@@ -12,14 +12,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:backgroundTint="@color/colorPrimary"
-        android:text="Base Fragment"
+        android:text="@string/base_fragment"
         android:textColor="@android:color/white" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_small"
-        android:text="Uses EasyLocationBaseFragment, Handles the location permissions and settings on it's own by extending the location fragment"
+        android:text="@string/baseFragmentButtonMessage"
         android:textSize="@dimen/font_medium" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -29,13 +29,13 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/margin_medium"
         android:backgroundTint="@color/colorPrimary"
-        android:text="Easy location"
+        android:text="@string/easy_location"
         android:textColor="@android:color/white" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_small"
-        android:text="Uses EasyLocation Builder class to request your location, You will have to handle the location permissions and setting yourself"
+        android:text="@string/easyLocationButtonMessage"
         android:textSize="@dimen/font_medium" />
 </LinearLayout>

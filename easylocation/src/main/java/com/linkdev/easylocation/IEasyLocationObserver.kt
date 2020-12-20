@@ -19,7 +19,9 @@ import androidx.lifecycle.LiveData
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.LocationResult
 
-// Copyright (c) 2020 Link Development All rights reserved.
+/**
+ * Contract for location observers.
+ */
 interface IEasyLocationObserver {
 
     /**
@@ -31,4 +33,9 @@ interface IEasyLocationObserver {
      * Unsubscribe from the location updates.
      */
     fun stopLocationUpdates()
+
+    /**
+     * fetch the latest known location
+     */
+    fun fetchLatestKnownLocation(): LiveData<LocationResult>
 }

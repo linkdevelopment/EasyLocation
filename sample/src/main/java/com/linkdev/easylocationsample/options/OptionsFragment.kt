@@ -1,4 +1,4 @@
-package com.linkdev.easylocationsample
+package com.linkdev.easylocationsample.options
 
 import android.content.Context
 import android.os.Bundle
@@ -8,15 +8,13 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.LocationRequest
 import com.linkdev.easylocation.core.location_providers.fused.options.DisplacementLocationOptions
 import com.linkdev.easylocation.core.location_providers.fused.options.TimeLocationOptions
 import com.linkdev.easylocation.core.models.LocationRequestType
-import com.linkdev.easylocationsample.model.SampleLocationAttributes
+import com.linkdev.easylocation.core.models.Priority
+import com.linkdev.easylocationsample.R
 import kotlinx.android.synthetic.main.fragment_location_options.*
-import kotlinx.android.synthetic.main.location_sample_fragment.*
 
-// Copyright (c) 2020 Link Development All rights reserved.
 class OptionsFragment : Fragment() {
 
     private lateinit var mContext: Context
@@ -52,6 +50,9 @@ class OptionsFragment : Fragment() {
     private fun setListeners() {
         btnLocate.setOnClickListener { onLocateClicked() }
         btnStopLocation.setOnClickListener { onStopLocation() }
+        checkBoxFetchLastKnownLocation.setOnCheckedChangeListener { _, checked ->
+            onFetchLastKnownLocationChecked(checked)
+        }
     }
 
     private fun onStopLocation() {
@@ -62,10 +63,28 @@ class OptionsFragment : Fragment() {
     }
 
     private fun onLocateClicked() {
-        mListener.onLocateClicked(getLocationAttributes())
+        getLocation()
 
         btnLocate.visibility = View.GONE
         btnStopLocation.visibility = View.VISIBLE
+    }
+
+    private fun getLocation() {
+        val priority = getPriority()
+        val fastestInterval = getFastestInterval()
+        val maxRequestTime = getMaxRequestTime()
+        val fetchLastKnownLocation = checkBoxFetchLastKnownLocation.isChecked
+
+        val locationOptions =
+            if (spOptions.selectedItemPosition == 0) {
+                TimeLocationOptions(getInterval(), fastestInterval, priority)
+            } else {
+                DisplacementLocationOptions(getSmallestDisplacement(), fastestInterval, priority)
+            }
+
+        mListener.onLocateClicked(
+            getRequestType(), locationOptions, maxRequestTime, fetchLastKnownLocation
+        )
     }
 
     private fun initViews() {
@@ -87,7 +106,7 @@ class OptionsFragment : Fragment() {
 
     private fun initPrioritySpinner() {
         val optionsList =
-            arrayListOf("High accuracy", "Balanced power accuracy", "PRIORITY_LOW_POWER")
+            arrayListOf("High accuracy", "Balanced power accuracy", "Low power", "No Power")
 
         val arrayAdapter =
             ArrayAdapter(mContext, android.R.layout.simple_spinner_item, optionsList)
@@ -104,15 +123,16 @@ class OptionsFragment : Fragment() {
         return edtSmallestDisplacement.text.toString().toFloat()
     }
 
-    private fun getIInterval(): Long {
+    private fun getInterval(): Long {
         return edtInterval.text.toString().toLong()
     }
 
-    private fun getPriority(): Int {
+    private fun getPriority(): Priority {
         return when (spPriority.selectedItemPosition) {
-            0 -> LocationRequest.PRIORITY_HIGH_ACCURACY
-            1 -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-            else -> LocationRequest.PRIORITY_LOW_POWER
+            0 -> Priority.PRIORITY_HIGH_ACCURACY
+            1 -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
+            2 -> Priority.PRIORITY_LOW_POWER
+            else -> Priority.PRIORITY_NO_POWER
         }
     }
 
@@ -121,27 +141,8 @@ class OptionsFragment : Fragment() {
     }
 
     private fun getRequestType(): LocationRequestType {
-        return if (checkBoxSingleRequest.isChecked)
+        return if (getIsOneTimeRequest())
             LocationRequestType.ONE_TIME_REQUEST else LocationRequestType.UPDATES
-    }
-
-    private fun getLocationAttributes(): SampleLocationAttributes {
-        val priority = getPriority()
-        val fastestInterval = getFastestInterval()
-        val maxRequestTime = getMaxRequestTime()
-
-        val locationOptions =
-            if (spOptions.selectedItemPosition == 0) {
-                TimeLocationOptions(getIInterval(), fastestInterval, priority)
-            } else {
-                DisplacementLocationOptions(getSmallestDisplacement(), fastestInterval, priority)
-            }
-
-        return SampleLocationAttributes(
-            getRequestType(),
-            locationOptions,
-            maxRequestTime
-        )
     }
 
     private fun onLocationOptionChecked(): AdapterView.OnItemSelectedListener? {
@@ -166,10 +167,23 @@ class OptionsFragment : Fragment() {
         }
     }
 
-    interface OnOptionsFragmentInteraction {
+    fun showLocateButton(show: Boolean) {
+        btnLocate.post {
+            btnLocate.visibility = if (show) View.VISIBLE else View.GONE
+        }
+    }
 
-        fun onLocateClicked(locationAttributes: SampleLocationAttributes)
+    fun showStopLocationButton(show: Boolean) {
+        btnStopLocation.post {
+            btnStopLocation.visibility = if (show) View.VISIBLE else View.GONE
+        }
+    }
 
-        fun onStopLocation()
+    private fun getIsOneTimeRequest(): Boolean {
+        return checkBoxSingleRequest.isChecked
+    }
+
+    private fun onFetchLastKnownLocationChecked(isChecked: Boolean) {
+        groupFetchLastKnownLocation.visibility = if (isChecked) View.GONE else View.VISIBLE
     }
 }

@@ -20,7 +20,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.EasyLocationConstants
-import com.linkdev.easylocation.core.models.LocationProvidersTypes
 import com.linkdev.easylocation.core.models.LocationRequestType
 import com.linkdev.easylocation.core.models.LocationResult
 import com.linkdev.easylocation.lifecycle.EasyLocationLifeCycleObserver
@@ -38,7 +37,7 @@ class EasyLocation private constructor(
 ) {
 
     /**
-     * The used adapter implementing [IEasyLocationObserver] Interface.
+     * The contract for the location observer {[EasyLocationLifeCycleObserver]}.
      */
     private var mLocationObserver: IEasyLocationObserver? = null
 
@@ -60,6 +59,19 @@ class EasyLocation private constructor(
     }
 
     /**
+     * fetch the latest known location.
+     */
+    fun fetchLatestKnownLocation(lifecycle: Lifecycle): LiveData<LocationResult> {
+        mLocationObserver = EasyLocationLifeCycleObserver(
+            mContext, mMaxLocationRequestTime, mLocationRequestType
+        )
+
+        lifecycle.addObserver(mLocationObserver as EasyLocationLifeCycleObserver)
+
+        return mLocationObserver?.fetchLatestKnownLocation()!!
+    }
+
+    /**
      * If invoked stops the location updates.
      */
     fun stopLocationUpdates() {
@@ -72,11 +84,11 @@ class EasyLocation private constructor(
     class Builder(private val context: Context, private val mLocationOptions: LocationOptions) {
 
         /**
-         * Max location request time before sending location update failed if the location was not retrieved.
+         * Max location request time before timeout and sending location update failed if the location was not retrieved.
          * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
          */
-        private var mMaxLocationRequestTime: Long =
-            EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME
+        private var mLocationRequestTimeout: Long =
+            EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT
 
         /**
          * The location request type [LocationRequestType]
@@ -85,16 +97,16 @@ class EasyLocation private constructor(
             EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TYPE
 
         /**
-         * Sets max location request time before sending location update failed if the location was not retrieved.
+         * Max location request time before timeout and sending location update failed if the location was not retrieved.
          * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
          */
         fun setMaxLocationRequestTime(maxLocationRequestTime: Long): Builder {
-            mMaxLocationRequestTime = maxLocationRequestTime
+            mLocationRequestTimeout = maxLocationRequestTime
             return this
         }
 
         /**
-         * Sets the location request type.
+         * The location request type [LocationRequestType]
          */
         fun setLocationRequestType(locationRequestType: LocationRequestType): Builder {
             mLocationRequestType = locationRequestType
@@ -108,7 +120,7 @@ class EasyLocation private constructor(
             return EasyLocation(
                 context,
                 mLocationOptions,
-                mMaxLocationRequestTime,
+                mLocationRequestTimeout,
                 mLocationRequestType
             )
         }

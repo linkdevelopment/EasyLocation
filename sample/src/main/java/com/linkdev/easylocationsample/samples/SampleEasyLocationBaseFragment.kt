@@ -16,38 +16,45 @@
 package com.linkdev.easylocationsample.samples
 
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.linkdev.easylocationsample.R
-import com.linkdev.easylocationsample.model.SampleLocationAttributes
-import com.linkdev.easylocationsample.utils.Constants
-import com.linkdev.easylocationsample.utils.Utils
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.linkdev.easylocation.EasyLocationBaseFragment
+import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.LocationErrorCode
+import com.linkdev.easylocation.core.models.LocationRequestType
 import com.linkdev.easylocation.core.models.LocationResultError
-import com.linkdev.easylocationsample.OptionsFragment
+import com.linkdev.easylocationsample.R
+import com.linkdev.easylocationsample.options.OnOptionsFragmentInteraction
+import com.linkdev.easylocationsample.options.OptionsFragment
+import com.linkdev.easylocationsample.samples.adapter.SamplesAdapter
+import com.linkdev.easylocationsample.utils.Utils
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
  * This sample Fragment is sampling the use of [EasyLocationBaseFragment].
  */
-class EasyLocationBaseSampleFragment : EasyLocationBaseFragment(), OptionsFragment.OnOptionsFragmentInteraction {
+class SampleEasyLocationBaseFragment : EasyLocationBaseFragment(), OnOptionsFragmentInteraction {
 
     private lateinit var mContext: Context
+    private lateinit var mOptionsFragment: OptionsFragment
+
+    private lateinit var mAdapter: SamplesAdapter
+
+    private lateinit var requestType: LocationRequestType
+    private lateinit var locationOptions: LocationOptions
+    private var maxRequestTime: Long = 0
+    private var fetchLastKnownLocation: Boolean = false
 
     companion object {
         const val TAG = "EasyLocationBaseSampleFragment"
 
-        fun newInstance(): EasyLocationBaseSampleFragment {
-            return EasyLocationBaseSampleFragment().apply {
+         fun newInstance(): SampleEasyLocationBaseFragment {
+            return SampleEasyLocationBaseFragment().apply {
                 arguments = Bundle().apply {
                 }
             }
@@ -66,32 +73,66 @@ class EasyLocationBaseSampleFragment : EasyLocationBaseFragment(), OptionsFragme
         super.onActivityCreated(savedInstanceState)
         if (activity != null)
             mContext = requireActivity()
+
+        mOptionsFragment =
+            childFragmentManager.findFragmentById(R.id.optionsFragment) as OptionsFragment
+
+        initAdapter()
     }
 
-    override fun onLocateClicked(locationAttributes: SampleLocationAttributes) {
-        requestLocation(locationAttributes)
+    private fun initAdapter() {
+        mAdapter = SamplesAdapter(mContext, arrayListOf())
+
+        rvLocation.layoutManager = LinearLayoutManager(mContext)
+        rvLocation.adapter = mAdapter
+    }
+
+    override fun onLocateClicked(
+        requestType: LocationRequestType,
+        locationOptions: LocationOptions,
+        maxRequestTime: Long,
+        fetchLastKnownLocation: Boolean
+    ) {
+        this.requestType = requestType
+        this.locationOptions = locationOptions
+        this.maxRequestTime = maxRequestTime
+        this.fetchLastKnownLocation = fetchLastKnownLocation
+
+        mAdapter.clear()
+
+        requestLocation(requestType, locationOptions, maxRequestTime)
     }
 
     override fun onStopLocation() {
         stopLocation()
-
-        txtLocation.text = getString(R.string.location_placeholder)
     }
 
-    private fun requestLocation(sampleLocationAttributes: SampleLocationAttributes) {
+    private fun requestLocation(
+        requestType: LocationRequestType,
+        locationOptions: LocationOptions,
+        maxRequestTime: Long
+    ) {
         getLocation(
-            sampleLocationAttributes.locationOptions,
-            sampleLocationAttributes.requestType,
-            sampleLocationAttributes.maxRequestTime
+            locationOptions,
+            requestType,
+            fetchLastKnownLocation,
+            maxRequestTime
         )
     }
 
     override fun onLocationRetrieved(location: Location) {
-        Utils.setLocationText(location, txtLocation)
-        scrlLocation.fullScroll(View.FOCUS_DOWN)
+        if (requestType == LocationRequestType.ONE_TIME_REQUEST) {
+            mOptionsFragment.showLocateButton(true)
+            mOptionsFragment.showStopLocationButton(false)
+        }
+
+        mAdapter.addItem(location)
     }
 
     override fun onLocationRetrievalError(locationResultError: LocationResultError) {
+        mOptionsFragment.showLocateButton(true)
+        mOptionsFragment.showStopLocationButton(false)
+
         when (locationResultError.errorCode) {
             LocationErrorCode.LOCATION_SETTING_DENIED,
             LocationErrorCode.LOCATION_PERMISSION_DENIED,
@@ -104,43 +145,4 @@ class EasyLocationBaseSampleFragment : EasyLocationBaseFragment(), OptionsFragme
                     .show()
         }
     }
-
-    override fun showLocationPermissionRationalDialog() {
-        val alertDialog = Utils.showBasicDialog(
-            mContext, null, getString(R.string.nearby_location_permission_message),
-            getString(R.string.grant_permission), getString(R.string.cancel),
-            this::onLocationPermissionDialogInteraction
-        )
-        alertDialog.setOnCancelListener { dialogInterface ->
-            onLocationPermissionDialogInteraction(
-                dialogInterface,
-                DialogInterface.BUTTON_NEGATIVE
-            )
-        }
-    }
-
-    private fun onLocationPermissionDialogInteraction(
-        dialogInterface: DialogInterface,
-        which: Int
-    ) {
-        dialogInterface.dismiss()
-        when (which) {
-            DialogInterface.BUTTON_POSITIVE -> {
-                val intent = Intent()
-                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                val uri =
-                    Uri.fromParts("package", mContext.packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            }
-            DialogInterface.BUTTON_NEGATIVE -> {
-                Toast.makeText(
-                    mContext,
-                    "You will not be able to use this feature. ",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
 }

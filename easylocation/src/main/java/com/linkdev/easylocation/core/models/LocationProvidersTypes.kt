@@ -16,7 +16,8 @@
 package com.linkdev.easylocation.core.models
 
 /**
- * * // Copyright (c) 2020 LinkDev. All rights reserved.**/
+ * The providers of the location for now there is [FUSED_LOCATION_PROVIDER]
+ **/
 enum class LocationProvidersTypes {
     /**
      * This Provider uses the FusedLocationProvider and Google Play Services to retrieve location.

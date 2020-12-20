@@ -15,20 +15,21 @@
  */
 package com.linkdev.easylocation.lifecycle
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import androidx.lifecycle.*
 import com.linkdev.easylocation.IEasyLocationObserver
-import com.linkdev.easylocation.core.location_providers.LocationProvidersFactory
+import com.linkdev.easylocation.core.EasyLocationManager
 import com.linkdev.easylocation.core.location_providers.LocationResultListener
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.EasyLocationConstants
-import com.linkdev.easylocation.core.models.LocationProvidersTypes
-import com.linkdev.easylocation.core.models.LocationRequestType
-import com.linkdev.easylocation.core.models.LocationResult
+import com.linkdev.easylocation.core.models.*
+import com.linkdev.easylocation.core.utils.EasyLocationUtils
 
 /**
- * Use this class to listen for location updates .
+ * This class is used to manage the location request lifecycle by
+ * Calling [stopLocationUpdates] onDestroy.
+ * Exposing the [requestLocationUpdates] to listen for the device location updates.
  *
  * @param mContext
  * @param mMaxLocationRequestTime Sets the max location updates request time after calling [requestLocationUpdates], if exceeded without any location updates un-subscribes and returns error.
@@ -37,15 +38,21 @@ import com.linkdev.easylocation.core.models.LocationResult
  */
 internal class EasyLocationLifeCycleObserver(
     private val mContext: Context,
-    private val mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_MAX_LOCATION_REQUEST_TIME,
+    private val mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT,
     private val mLocationRequestType: LocationRequestType = LocationRequestType.UPDATES
 ) : LifecycleObserver, IEasyLocationObserver {
 
+    /**
+     * The liveData used to subscribe to emit the location updates
+     */
     private val mLocationResponseLiveData: MutableLiveData<LocationResult> = MutableLiveData()
 
-    private var mLocationProvidersFactory: LocationProvidersFactory =
-        LocationProvidersFactory(
-            mContext, onLocationResultListener(), mMaxLocationRequestTime, mLocationRequestType
+    /**
+     * The locationProvidersFactory used to request/stop the location updates using a certain provider.
+     */
+    private var mEasyLocationManager: EasyLocationManager =
+        EasyLocationManager(
+            mContext, mMaxLocationRequestTime, mLocationRequestType
         )
 
     /**
@@ -61,41 +68,88 @@ internal class EasyLocationLifeCycleObserver(
      *
      * @throws IllegalArgumentException If the [locationOptions] does not correspond to the selected [LocationProvidersTypes] mentioned above.
      */
-    override fun requestLocationUpdates(
-        locationOptions: LocationOptions
-    ): LiveData<LocationResult> {
+    override fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult> {
         startLocationUpdates(locationOptions)
 
         return mLocationResponseLiveData
     }
 
-    private fun startLocationUpdates(
-        locationOptions: LocationOptions
-    ) {
-        mLocationProvidersFactory.requestLocationUpdates(
+    /**
+     * Stops and cancels the location updates.
+     */
+    override fun stopLocationUpdates() {
+        mEasyLocationManager.stopLocationUpdates()
+    }
+
+    /**
+     * Fetch the latest known location and returns the liveData for locationUpdates.
+     */
+    override fun fetchLatestKnownLocation(): LiveData<LocationResult> {
+        fetchLastKnownLocation()
+
+        return mLocationResponseLiveData
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun fetchLastKnownLocation() {
+        if (!EasyLocationUtils.isLocationPermissionGranted(mContext)) {
+            emitLocationResponse(LocationResult.Error(LocationResultError.PermissionDenied()))
+            return
+        }
+
+        if (!EasyLocationUtils.checkLocationSettings(mContext)) {
+            emitLocationResponse(LocationResult.Error(LocationResultError.SettingDisabled()))
+            return
+        }
+
+        mEasyLocationManager.fetchLatestKnownLocation(
             LocationProvidersTypes.FUSED_LOCATION_PROVIDER,
-            locationOptions
+            onLocationResultListener()
         )
     }
 
-    override fun stopLocationUpdates() {
-        mLocationProvidersFactory.stopLocationUpdates()
+    /**
+     * Requests the location updates
+     */
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates(locationOptions: LocationOptions) {
+        if (!EasyLocationUtils.isLocationPermissionGranted(mContext)) {
+            emitLocationResponse(LocationResult.Error(LocationResultError.PermissionDenied()))
+            return
+        }
+
+        if (!EasyLocationUtils.checkLocationSettings(mContext)) {
+            emitLocationResponse(LocationResult.Error(LocationResultError.SettingDisabled()))
+            return
+        }
+
+        mEasyLocationManager.requestLocationUpdates(
+            LocationProvidersTypes.FUSED_LOCATION_PROVIDER,
+            locationOptions,
+            onLocationResultListener()
+        )
     }
 
+    /**
+     * The subscriber for the location used to emit the location result
+     */
     private fun onLocationResultListener(): LocationResultListener {
         return object : LocationResultListener {
-            override fun onLocationRetrieved(location: Location) {
-                if (mLocationRequestType == LocationRequestType.ONE_TIME_REQUEST)
-                    stopLocationUpdates()
-                mLocationResponseLiveData.value = LocationResult.Success(location)
+            override fun onLocationRetrieved(location: Location?) {
+                emitLocationResponse(LocationResult.Success(location!!))
             }
 
             override fun onLocationRetrievalError(locationResult: LocationResult?) {
-                if (mLocationRequestType == LocationRequestType.ONE_TIME_REQUEST)
-                    stopLocationUpdates()
-                mLocationResponseLiveData.value = locationResult
+                emitLocationResponse(locationResult)
             }
         }
+    }
+
+    /**
+     * Emit this [locationResult] to [mLocationResponseLiveData]
+     */
+    private fun emitLocationResponse(locationResult: LocationResult?) {
+        mLocationResponseLiveData.value = locationResult
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

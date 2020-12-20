@@ -10,8 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:layout_marginTop="@dimen/margin_medium"
-        android:text="Location options"
+        android:text="@string/location_options"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/font_xlarge"
         android:textStyle="bold"
@@ -26,8 +25,18 @@
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
         android:layout_marginBottom="@dimen/margin_medium"
-        android:text="One time request"
+        android:text="@string/one_time_request"
         app:layout_constraintTop_toBottomOf="@id/txtLocationOptions" />
+
+    <CheckBox
+        android:id="@+id/checkBoxFetchLastKnownLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:text="@string/fetch_latest_known_location"
+        app:layout_constraintTop_toBottomOf="@id/checkBoxSingleRequest" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tlMaxRequestTime"
@@ -35,15 +44,15 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:hint="Max request time (Milli Second)"
-        app:layout_constraintTop_toBottomOf="@id/checkBoxSingleRequest">
+        android:hint="@string/max_request_time_milli_second"
+        app:layout_constraintTop_toBottomOf="@id/checkBoxFetchLastKnownLocation">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtMaxRequestTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:text="50000" />
+            android:text="@string/_50000" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -52,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:text="Provider options"
+        android:text="@string/provider_options"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/font_xlarge"
         android:textStyle="bold"
@@ -60,16 +69,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tlMaxRequestTime" />
 
+    <TextView
+        android:id="@+id/txtLocationOptionsTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:text="@string/location_options_type"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/font_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtProviderOptions" />
+
     <Spinner
         android:id="@+id/spOptions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_small"
         android:paddingVertical="@dimen/margin_small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtProviderOptions" />
+        app:layout_constraintTop_toBottomOf="@id/txtLocationOptionsTitle" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tlSmallestDisplacement"
@@ -77,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:hint="Smallest Displacement (Meters)"
+        android:hint="@string/smallest_displacement_meters"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:text="5" />
+            android:text="@string/_5" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -97,7 +119,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:hint="Interval (Milli Second)"
+        android:hint="@string/interval_milli_second"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spOptions">
@@ -107,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:text="5000" />
+            android:text="@string/_5000" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -116,7 +138,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:hint="Fastest interval (Milli Second)"
+        android:hint="@string/fastest_interval_milli_second"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tlInterval">
@@ -129,16 +151,29 @@
             android:text="2000" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/txtLocationPriorityTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:text="@string/priority"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/font_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tlFastestInterval" />
+
     <Spinner
         android:id="@+id/spPriority"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_small"
         android:paddingVertical="@dimen/margin_small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tlFastestInterval" />
+        app:layout_constraintTop_toBottomOf="@id/txtLocationPriorityTitle" />
 
     <Button
         android:id="@+id/btnLocate"
@@ -168,4 +203,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spPriority"
         app:layout_constraintWidth_percent="0.3" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupFetchLastKnownLocation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:constraint_referenced_ids="tlMaxRequestTime,txtProviderOptions,txtLocationOptionsTitle,spPriority,txtLocationPriorityTitle,tlSmallestDisplacement,spOptions,tlInterval,checkBoxSingleRequest,tlFastestInterval" />
 </androidx.constraintlayout.widget.ConstraintLayout>

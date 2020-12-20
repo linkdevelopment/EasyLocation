@@ -21,17 +21,17 @@ sealed class LocationResultError(
     val exception: Exception? = null
 ) {
 
-    class TimeoutError(errorMessage: String? = "Location request timed out without any response from the provider with these options") :
+    class TimeoutError(errorMessage: String? = EasyLocationConstants.ErrorMessages.TIMEOUT_ERROR) :
         LocationResultError(LocationErrorCode.TIME_OUT, errorMessage)
 
     class UnknownError(
-        errorMessage: String? = "An unknown error has just occurred",
+        errorMessage: String? = EasyLocationConstants.ErrorMessages.UNKNOWN_ERROR,
         exception: Exception? = null
     ) : LocationResultError(LocationErrorCode.UNKNOWN_ERROR, errorMessage, exception)
 
-    class PermissionDenied : LocationResultError(LocationErrorCode.LOCATION_PERMISSION_DENIED, "Needs Location permission")
+    class PermissionDenied : LocationResultError(LocationErrorCode.LOCATION_PERMISSION_DENIED, EasyLocationConstants.ErrorMessages.LOCATION_PERMISSION_ERROR)
 
-    class SettingDenied : LocationResultError(LocationErrorCode.LOCATION_SETTING_DENIED, "Needs Location permission")
+    class SettingDisabled : LocationResultError(LocationErrorCode.LOCATION_SETTING_DENIED, EasyLocationConstants.ErrorMessages.LOCATION_SETTING_ERROR)
 
     class ProviderException(exception: Exception?) :
         LocationResultError(LocationErrorCode.PROVIDER_EXCEPTION, exception = exception)

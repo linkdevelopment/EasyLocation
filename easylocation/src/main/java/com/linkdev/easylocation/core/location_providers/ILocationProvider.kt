@@ -15,11 +15,25 @@
  */
 package com.linkdev.easylocation.core.location_providers
 
+/**
+ * A contract for different location providers
+ */
 internal interface ILocationProvider {
 
+    /**
+     * Request the location updates for this subscriber [locationResultListener]
+     *
+     * @param locationResultListener
+     */
     fun requestLocationUpdates(locationResultListener: LocationResultListener)
 
+    /**
+     * stop and cancel the location updates for this provider
+     */
     fun stopLocationUpdates()
 
-    fun fetchLatestKnownLocation()
+    /**
+     * fetch the latest known location using this provider.
+     */
+    fun fetchLatestKnownLocation(locationResultListener: LocationResultListener)
 }

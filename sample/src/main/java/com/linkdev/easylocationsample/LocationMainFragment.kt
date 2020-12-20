@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.linkdev.easylocationsample.samples.EasyLocationBaseSampleFragment
-import com.linkdev.easylocationsample.samples.EasyLocationSampleFragment
+import com.linkdev.easylocationsample.samples.SampleEasyLocationBaseFragment
+import com.linkdev.easylocationsample.samples.SampleEasyLocationFragment
 import kotlinx.android.synthetic.main.fragment_location_main.*
 
-// Copyright (c) 2020 Link Development All rights reserved.
 class LocationMainFragment : Fragment() {
 
     companion object {
@@ -53,15 +52,15 @@ class LocationMainFragment : Fragment() {
 
     private fun onBaseFragmentClicked() {
         mListener.onSampleClicked(
-            EasyLocationBaseSampleFragment.newInstance(),
-            EasyLocationBaseSampleFragment.TAG
+            SampleEasyLocationBaseFragment.newInstance(),
+            SampleEasyLocationBaseFragment.TAG
         )
     }
 
     private fun onEasyLocationClicked() {
         mListener.onSampleClicked(
-            EasyLocationSampleFragment.newInstance(),
-            EasyLocationSampleFragment.TAG
+            SampleEasyLocationFragment.newInstance(),
+            SampleEasyLocationFragment.TAG
         )
     }
 
