@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_large"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnBaseFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/base_fragment"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        android:text="@string/baseFragmentButtonMessage"
+        android:textSize="@dimen/font_medium" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnEasyLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/easy_location"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        android:text="@string/easyLocationButtonMessage"
+        android:textSize="@dimen/font_medium" />
+</LinearLayout>

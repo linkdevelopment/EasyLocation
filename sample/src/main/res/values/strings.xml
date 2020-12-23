@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">EasyLocation</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="grant_permission">Grant permission</string>
+    <string name="easy_location_cancel">Cancel</string>
+    <string name="start_location">Locate</string>
+    <string name="stop_location">Stop location</string>
+
+    <string name="location_placeholder">…</string>
+    <string name="locationPermissionNegativeButton">You will not be able to use this feature.</string>
+    <string name="ok">OK</string>
+    <string name="base_fragment">Base Fragment</string>
+    <string name="baseFragmentButtonMessage">Uses EasyLocationBaseFragment, Handles the location permissions and settings on it\'s own by extending the location fragment</string>
+    <string name="easy_location">Easy location</string>
+    <string name="easyLocationButtonMessage">Uses EasyLocation Builder class to request your location, You will have to handle the location permissions and setting yourself</string>
+    <string name="location_options">Location options</string>
+    <string name="one_time_request">One time request</string>
+    <string name="location_request_timeout_milli_second">Location request timeout (Milli Second)</string>
+    <string name="_50000">50000</string>
+    <string name="provider_options">Provider options</string>
+    <string name="location_options_type">Location Options Type</string>
+    <string name="smallest_displacement_meters">Smallest Displacement (Meters)</string>
+    <string name="_5">5</string>
+    <string name="interval_milli_second">Interval (Milli Second)</string>
+    <string name="_5000">5000</string>
+    <string name="fastest_interval_milli_second">Fastest interval (Milli Second)</string>
+    <string name="priority">Priority</string>
+    <string name="fetch_latest_known_location">Fetch last known location</string>
+    <string name="locationPermissionIsRequired">Location Permission is required</string>
+</resources>
