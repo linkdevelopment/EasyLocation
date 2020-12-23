@@ -53,7 +53,7 @@ class SampleEasyLocationBaseFragment : EasyLocationBaseFragment(), OnOptionsFrag
     companion object {
         const val TAG = "EasyLocationBaseSampleFragment"
 
-         fun newInstance(): SampleEasyLocationBaseFragment {
+        fun newInstance(): SampleEasyLocationBaseFragment {
             return SampleEasyLocationBaseFragment().apply {
                 arguments = Bundle().apply {
                 }
@@ -127,6 +127,12 @@ class SampleEasyLocationBaseFragment : EasyLocationBaseFragment(), OnOptionsFrag
         }
 
         mAdapter.addItem(location)
+
+        // Scroll to the first item only
+        if (mAdapter.mData.size == 1)
+            scrlLocation.postDelayed({
+                scrlLocation.fullScroll(View.FOCUS_DOWN)
+            }, 200)
     }
 
     override fun onLocationRetrievalError(locationResultError: LocationResultError) {

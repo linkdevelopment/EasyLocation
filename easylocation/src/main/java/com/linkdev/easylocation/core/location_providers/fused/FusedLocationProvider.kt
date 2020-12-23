@@ -108,7 +108,7 @@ internal class FusedLocationProvider(
      * Called when the last known location retrieved and notifies the location subscriber [mLocationResultListener]
      */
     private fun onLastLocationRetrieved(locationTask: Task<Location>) {
-        if (locationTask.isSuccessful)
+        if (locationTask.isSuccessful && locationTask.result != null)
             mLocationResultListener.onLocationRetrieved(locationTask.result)
         else
             mLocationResultListener.onLocationRetrievalError(

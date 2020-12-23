@@ -168,6 +168,11 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
 
         mAdapter.addItem(location)
 
+        // Scroll to the first item only
+        if (mAdapter.mData.size == 1)
+            scrlLocation.postDelayed({
+                scrlLocation.fullScroll(View.FOCUS_DOWN)
+            }, 200)
     }
 
     private fun onLocationRetrievalError(locationResultError: LocationResultError) {
