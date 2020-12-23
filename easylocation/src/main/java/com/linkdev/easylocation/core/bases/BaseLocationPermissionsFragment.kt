@@ -172,7 +172,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
     open fun showLocationPermissionRationalDialog(rationaleDialogMessage: String) {
         val alertDialog = EasyLocationUtils.showBasicDialog(
             context, null, rationaleDialogMessage,
-            getString(R.string.cont), getString(R.string.cancel),
+            getString(R.string.easy_location_continue), getString(R.string.easy_location_cancel),
             this::onLocationPermissionDialogInteraction
         ).setOnCancelListener { dialogInterface ->
             onLocationPermissionDialogInteraction(

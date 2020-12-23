@@ -33,6 +33,9 @@ import kotlin.reflect.KFunction2
  */
 internal object EasyLocationUtils {
 
+    /**
+     * Utility method to show basic dialog.
+     */
     fun showBasicDialog(
         context: Context?, title: String?, message: String?,
         positiveButton: String?, negativeButton: String?,
@@ -49,7 +52,7 @@ internal object EasyLocationUtils {
     }
 
     /**
-     * Checks for the location permission is grated for the given [context]
+     * Checks for the location permission is granted for the given [context]
      *
      * @param context the context to check the location for
      */
@@ -62,6 +65,11 @@ internal object EasyLocationUtils {
                 ) == PackageManager.PERMISSION_GRANTED
     }
 
+    /**
+     * Checks whether the location setting is on for the given [context]
+     *
+     * @param context context
+     */
     fun checkLocationSettings(context: Context): Boolean {
         return try {
             val locationMode =

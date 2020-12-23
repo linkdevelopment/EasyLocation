@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.linkdev.easylocationsample.R
 import com.linkdev.easylocationsample.utils.Utils
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SamplesAdapter(
     private val mContext: Context,
-    private val mData: ArrayList<Location>
+    var mData: ArrayList<Location>
 ) : RecyclerView.Adapter<SampleViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SampleViewHolder {
@@ -20,7 +22,7 @@ class SamplesAdapter(
     }
 
     override fun onBindViewHolder(holder: SampleViewHolder, position: Int) {
-        Utils.setLocationText(mData[position], holder.txtLocation)
+        holder.bind(mData[position])
     }
 
     override fun getItemCount(): Int {
@@ -33,7 +35,7 @@ class SamplesAdapter(
     }
 
     fun clear() {
-        mData.clear()
+        mData = arrayListOf()
         notifyDataSetChanged()
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="easy_location_rationale_message">Location permission is required to be able to use this feature</string>
-    <string name="cancel">Cancel</string>
-    <string name="cont">Continue</string>
+    <string name="easy_location_cancel">Cancel</string>
+    <string name="easy_location_continue">Continue</string>
 </resources>

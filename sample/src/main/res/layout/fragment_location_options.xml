@@ -209,5 +209,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        app:constraint_referenced_ids="tlMaxRequestTime,txtProviderOptions,txtLocationOptionsTitle,spPriority,txtLocationPriorityTitle,tlSmallestDisplacement,spOptions,tlInterval,checkBoxSingleRequest,tlFastestInterval" />
+        app:constraint_referenced_ids="tlMaxRequestTime,txtProviderOptions,txtLocationOptionsTitle,spPriority,txtLocationPriorityTitle,spOptions,checkBoxSingleRequest,tlFastestInterval" />
 </androidx.constraintlayout.widget.ConstraintLayout>

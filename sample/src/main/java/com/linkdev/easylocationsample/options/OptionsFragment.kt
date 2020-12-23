@@ -183,7 +183,25 @@ class OptionsFragment : Fragment() {
         return checkBoxSingleRequest.isChecked
     }
 
+    /**
+     * Hide options on fetch last known location checked
+     */
     private fun onFetchLastKnownLocationChecked(isChecked: Boolean) {
-        groupFetchLastKnownLocation.visibility = if (isChecked) View.GONE else View.VISIBLE
+        groupFetchLastKnownLocation.visibility = if (isChecked) {
+            tlInterval.visibility = View.GONE
+            tlSmallestDisplacement.visibility = View.GONE
+
+            View.GONE
+        } else {
+            if (spOptions.selectedItemPosition == 0) {
+                tlInterval.visibility = View.VISIBLE
+                tlSmallestDisplacement.visibility = View.INVISIBLE
+            } else {
+                tlInterval.visibility = View.INVISIBLE
+                tlSmallestDisplacement.visibility = View.VISIBLE
+            }
+
+            View.VISIBLE
+        }
     }
 }

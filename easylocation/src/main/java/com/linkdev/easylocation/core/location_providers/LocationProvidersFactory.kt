@@ -33,22 +33,22 @@ internal class LocationProvidersFactory(
 ) {
 
     /**
-     * Returns the [ILocationProvider] based on the [locationProviderType] and the provided [locationOptions].
+     * Returns the [ILocationProvider] based on the [locationProvidersTypes] and the provided [locationOptions].
      *
-     * @param locationProviderType Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
+     * @param locationProvidersTypes Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
      *
-     * @param locationOptions The specs required for retrieving location info, Depending on [locationProviderType]:
+     * @param locationOptions The specs required for retrieving location info, Depending on [locationProvidersTypes]:
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
      *
-     * @return Location provider based on the [locationProviderType].
+     * @return Location provider based on the [locationProvidersTypes].
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun getLocationProvider(
-        locationProviderType: LocationProvidersTypes,
+        locationProvidersTypes: LocationProvidersTypes,
         locationOptions: LocationOptions = EasyLocationConstants.DEFAULT_FUSED_OPTIONS
     ): ILocationProvider {
-        return when (locationProviderType) {
+        return when (locationProvidersTypes) {
             LocationProvidersTypes.FUSED_LOCATION_PROVIDER -> {
                 initializeFusedLocationProvider(locationOptions)
             }

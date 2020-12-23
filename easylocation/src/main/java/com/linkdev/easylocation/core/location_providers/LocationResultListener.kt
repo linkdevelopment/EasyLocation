@@ -26,7 +26,7 @@ internal interface LocationResultListener {
     /**
      * Called in case the location was retrieved successfully.
      */
-    fun onLocationRetrieved(location: Location?)
+    fun onLocationRetrieved(location: Location)
 
     /**
      * Called when there is an error occurred while requesting the location.

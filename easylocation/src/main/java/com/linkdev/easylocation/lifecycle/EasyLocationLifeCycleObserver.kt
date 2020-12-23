@@ -32,41 +32,34 @@ import com.linkdev.easylocation.core.utils.EasyLocationUtils
  * Exposing the [requestLocationUpdates] to listen for the device location updates.
  *
  * @param mContext
- * @param mMaxLocationRequestTime Sets the max location updates request time after calling [requestLocationUpdates], if exceeded without any location updates un-subscribes and returns error.
+ * @param mLocationRequestTimeout Sets the max location updates request time after calling [requestLocationUpdates], if exceeded without any location updates un-subscribes and returns error.
  * set to [EasyLocationConstants.INFINITE_REQUEST_TIME] to never stop listening for updates.
  * @param mLocationRequestType sets the request type [LocationRequestType.ONE_TIME_REQUEST] or [LocationRequestType.UPDATES]
  */
 internal class EasyLocationLifeCycleObserver(
     private val mContext: Context,
-    private val mMaxLocationRequestTime: Long = EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT,
+    private val mLocationRequestTimeout: Long = EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT,
     private val mLocationRequestType: LocationRequestType = LocationRequestType.UPDATES
 ) : LifecycleObserver, IEasyLocationObserver {
 
     /**
-     * The liveData used to subscribe to emit the location updates
+     * The liveData used to emit the location updates
      */
     private val mLocationResponseLiveData: MutableLiveData<LocationResult> = MutableLiveData()
 
-    /**
-     * The locationProvidersFactory used to request/stop the location updates using a certain provider.
-     */
     private var mEasyLocationManager: EasyLocationManager =
         EasyLocationManager(
-            mContext, mMaxLocationRequestTime, mLocationRequestType
+            mContext, mLocationRequestTimeout, mLocationRequestType
         )
 
     /**
-     * Requests location updates from the [locationProvider] using [locationOptions] and returns [LocationResult].
-     *
-     * @param locationProvider Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
+     * Requests location updates using [locationOptions] and returns [LocationResult].
      *
      * @param locationOptions The specs required for retrieving location info, Depending on [locationProvider]:
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
      *
      * @return LiveData object to listen for location updates with [LocationResult].
-     *
-     * @throws IllegalArgumentException If the [locationOptions] does not correspond to the selected [LocationProvidersTypes] mentioned above.
      */
     override fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult> {
         startLocationUpdates(locationOptions)
@@ -135,8 +128,8 @@ internal class EasyLocationLifeCycleObserver(
      */
     private fun onLocationResultListener(): LocationResultListener {
         return object : LocationResultListener {
-            override fun onLocationRetrieved(location: Location?) {
-                emitLocationResponse(LocationResult.Success(location!!))
+            override fun onLocationRetrieved(location: Location) {
+                emitLocationResponse(LocationResult.Success(location))
             }
 
             override fun onLocationRetrievalError(locationResult: LocationResult?) {

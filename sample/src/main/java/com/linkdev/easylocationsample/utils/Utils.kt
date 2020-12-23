@@ -31,24 +31,7 @@ import kotlin.reflect.KFunction2
 
 object Utils {
 
-    fun setLocationText(location: Location, txtLocation: TextView) {
-        val latLng = String.format(
-            Locale.ENGLISH, "%f - %f",
-            location.latitude, location.longitude
-        )
-        val spannableStringBuilder = SpannableStringBuilder("${txtLocation.text}\n\n")
-
-        val spannableString = SpannableString(latLng)
-        spannableString.setSpan(
-            ForegroundColorSpan(Color.BLUE), 0, latLng.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        spannableStringBuilder.append(spannableString)
-        spannableStringBuilder.append(" / ${getCurrentTime()}")
-        txtLocation.setText(spannableStringBuilder, TextView.BufferType.SPANNABLE)
-    }
-
-    private fun getCurrentTime(): String {
+    fun getCurrentTime(): String {
         val date = Date()
         return SimpleDateFormat("hh:mm:ss").format(date)
     }

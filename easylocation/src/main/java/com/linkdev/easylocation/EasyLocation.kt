@@ -32,7 +32,7 @@ import com.linkdev.easylocation.lifecycle.EasyLocationLifeCycleObserver
 class EasyLocation private constructor(
     private val mContext: Context,
     private val mLocationOptions: LocationOptions,
-    private val mMaxLocationRequestTime: Long,
+    private val mLocationRequestTimeout: Long,
     private val mLocationRequestType: LocationRequestType,
 ) {
 
@@ -50,7 +50,7 @@ class EasyLocation private constructor(
      */
     fun requestLocationUpdates(lifecycle: Lifecycle): LiveData<LocationResult> {
         mLocationObserver = EasyLocationLifeCycleObserver(
-            mContext, mMaxLocationRequestTime, mLocationRequestType
+            mContext, mLocationRequestTimeout, mLocationRequestType
         )
 
         lifecycle.addObserver(mLocationObserver as EasyLocationLifeCycleObserver)
@@ -63,7 +63,7 @@ class EasyLocation private constructor(
      */
     fun fetchLatestKnownLocation(lifecycle: Lifecycle): LiveData<LocationResult> {
         mLocationObserver = EasyLocationLifeCycleObserver(
-            mContext, mMaxLocationRequestTime, mLocationRequestType
+            mContext, mLocationRequestTimeout, mLocationRequestType
         )
 
         lifecycle.addObserver(mLocationObserver as EasyLocationLifeCycleObserver)
@@ -100,8 +100,8 @@ class EasyLocation private constructor(
          * Max location request time before timeout and sending location update failed if the location was not retrieved.
          * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
          */
-        fun setMaxLocationRequestTime(maxLocationRequestTime: Long): Builder {
-            mLocationRequestTimeout = maxLocationRequestTime
+        fun setLocationRequestTimeout(locationRequestTimeout: Long): Builder {
+            mLocationRequestTimeout = locationRequestTimeout
             return this
         }
 

@@ -45,6 +45,7 @@ import com.linkdev.easylocationsample.options.OnOptionsFragmentInteraction
 import com.linkdev.easylocationsample.options.OptionsFragment
 import com.linkdev.easylocationsample.samples.adapter.SamplesAdapter
 import com.linkdev.easylocationsample.utils.Utils
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
@@ -116,7 +117,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
 
         mAdapter.clear()
 
-        checkLocationPermissions(mContext, "Location Permission is required!")
+        checkLocationPermissions(mContext, getString(R.string.locationPermissionIsRequired))
     }
 
     override fun onStopLocation() {
@@ -130,7 +131,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
         fetchLastKnownLocation: Boolean
     ) {
         mEasyLocation = EasyLocation.Builder(mContext, locationOptions)
-            .setMaxLocationRequestTime(maxRequestTime)
+            .setLocationRequestTimeout(maxRequestTime)
             .setLocationRequestType(requestType)
             .build()
 
@@ -150,10 +151,6 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     private fun onLocationStatusRetrieved(locationResult: LocationResult) {
         when (locationResult.status) {
             Status.SUCCESS -> {
-                if (locationResult.location == null) {
-                    onLocationRetrievalError(LocationResultError.UnknownError())
-                    return
-                }
                 onLocationRetrieved(locationResult.location!!)
             }
             Status.ERROR ->
@@ -164,12 +161,13 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     }
 
     private fun onLocationRetrieved(location: Location) {
-        if (requestType == LocationRequestType.ONE_TIME_REQUEST) {
+        if (requestType == LocationRequestType.ONE_TIME_REQUEST || fetchLastKnownLocation) {
             mOptionsFragment.showLocateButton(true)
             mOptionsFragment.showStopLocationButton(false)
         }
 
         mAdapter.addItem(location)
+
     }
 
     private fun onLocationRetrievalError(locationResultError: LocationResultError) {
@@ -222,7 +220,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     }
 
     //* Location Permission *//
-    fun checkLocationPermissions(context: Context?, rationaleDialogMessage: String) {
+    private fun checkLocationPermissions(context: Context?, rationaleDialogMessage: String) {
         when {
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 showLocationPermissionRationalDialog(rationaleDialogMessage)
@@ -328,8 +326,8 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
             context,
             null,
             rationaleDialogMessage,
-            getString(com.linkdev.easylocation.R.string.cont),
-            getString(com.linkdev.easylocation.R.string.cancel),
+            getString(com.linkdev.easylocation.R.string.easy_location_continue),
+            getString(com.linkdev.easylocation.R.string.easy_location_cancel),
             this::onLocationPermissionDialogInteraction
         ).setOnCancelListener { dialogInterface ->
             onLocationPermissionDialogInteraction(

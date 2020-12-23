@@ -42,7 +42,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
 
     private lateinit var mLocationOptions: LocationOptions
     private var mLocationRequestType by Delegates.notNull<LocationRequestType>()
-    private var mMaxLocationRequestTime by Delegates.notNull<Long>()
+    private var mLocationRequestTimeout by Delegates.notNull<Long>()
 
     /**
      * Called when both LocationPermission and locationSetting are granted.
@@ -70,7 +70,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
      *      + [TimeFusedLocationOptions]
      *
      * @param locationRequestType true to emit the location only once.
-     * @param maxLocationRequestTime Sets the max location updates request time
+     * @param locationRequestTimeout Sets the max location updates request time
      *      if exceeded stops the location updates and returns error <P>
      *      @Default{#LocationLifecycleObserver.DEFAULT_MAX_LOCATION_REQUEST_TIME}.
      */
@@ -78,12 +78,12 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
         locationOptions: LocationOptions,
         locationRequestType: LocationRequestType = LocationRequestType.UPDATES,
         fetchLastKnownLocation: Boolean = false,
-        maxLocationRequestTime: Long = 50000,
+        locationRequestTimeout: Long = 50000,
         rationaleDialogMessage: String = getString(R.string.easy_location_rationale_message)
     ) {
         mLocationOptions = locationOptions
         mLocationRequestType = locationRequestType
-        mMaxLocationRequestTime = maxLocationRequestTime
+        mLocationRequestTimeout = locationRequestTimeout
         mFetchLastKnownLocation = fetchLastKnownLocation
 
         checkLocationPermissions(activity, rationaleDialogMessage)
@@ -101,7 +101,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun getLocation() {
         mEasyLocation = EasyLocation.Builder(context!!, mLocationOptions)
-            .setMaxLocationRequestTime(mMaxLocationRequestTime)
+            .setLocationRequestTimeout(mLocationRequestTimeout)
             .setLocationRequestType(mLocationRequestType)
             .build()
 
@@ -116,11 +116,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     private fun onLocationStatusRetrieved(locationResult: LocationResult) {
         when (locationResult.status) {
             Status.SUCCESS -> {
-                if (locationResult.location == null) {
-                    onLocationRetrievalError(LocationResultError.UnknownError())
-                    return
-                }
-                onLocationRetrieved(locationResult.location)
+                onLocationRetrieved(locationResult.location!!)
             }
             Status.ERROR ->
                 onLocationRetrievalError(
