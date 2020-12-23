@@ -45,7 +45,6 @@ import com.linkdev.easylocationsample.options.OnOptionsFragmentInteraction
 import com.linkdev.easylocationsample.options.OptionsFragment
 import com.linkdev.easylocationsample.samples.adapter.SamplesAdapter
 import com.linkdev.easylocationsample.utils.Utils
-import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.location_sample_fragment.*
 
 /**
@@ -62,7 +61,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
 
     private lateinit var requestType: LocationRequestType
     private lateinit var locationOptions: LocationOptions
-    private var maxRequestTime: Long = 0
+    private var locationRequestTimeout: Long = 0
 
     companion object {
         const val TAG = "EasyLocationSampleFragment"
@@ -106,11 +105,11 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     override fun onLocateClicked(
         requestType: LocationRequestType,
         locationOptions: LocationOptions,
-        maxRequestTime: Long
+        locationRequestTimeout: Long
     ) {
         this.requestType = requestType
         this.locationOptions = locationOptions
-        this.maxRequestTime = maxRequestTime
+        this.locationRequestTimeout = locationRequestTimeout
 
         mAdapter.clear()
 
@@ -124,10 +123,10 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     private fun requestLocation(
         requestType: LocationRequestType,
         locationOptions: LocationOptions,
-        maxRequestTime: Long
+        locationRequestTimeout: Long
     ) {
         mEasyLocation = EasyLocation.Builder(mContext, locationOptions)
-            .setLocationRequestTimeout(maxRequestTime)
+            .setLocationRequestTimeout(locationRequestTimeout)
             .setLocationRequestType(requestType)
             .build()
 
@@ -193,7 +192,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
      * Called when both LocationPermission and locationSetting are granted.
      */
     private fun onLocationPermissionsReady() {
-        requestLocation(requestType, locationOptions, maxRequestTime)
+        requestLocation(requestType, locationOptions, locationRequestTimeout)
     }
 
     private fun onLocationPermissionError(locationResultError: LocationResultError) {

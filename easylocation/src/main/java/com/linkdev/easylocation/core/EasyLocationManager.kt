@@ -89,19 +89,6 @@ internal class EasyLocationManager(
     }
 
     /**
-     * fetch the latest known location using this provider.
-     */
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    fun fetchLatestKnownLocation(
-        locationProvider: LocationProvidersTypes,
-        locationResultListener: LocationResultListener
-    ) {
-        mLocationResultListener = locationResultListener
-
-        fetchLastKnownLocation(locationProvider)
-    }
-
-    /**
      * Cancels the location updates from the factory and stops the timeout timer.
      */
     fun stopLocationUpdates() {
@@ -134,16 +121,16 @@ internal class EasyLocationManager(
     /**
      * fetch the latest known location.
      *
-     * @param locationProvider Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
+     * @param locationProvidersTypes Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun fetchLastKnownLocation(
-        locationProvider: LocationProvidersTypes
+        locationProvidersTypes: LocationProvidersTypes
     ) {
         mILocationProvider = LocationProvidersFactory(mContext)
-            .getLocationProvider(locationProvider)
+            .getLocationProvider(locationProvidersTypes)
 
-        (mILocationProvider as FusedLocationProvider).fetchLatestKnownLocation(onLocationRetrieved())
+        mILocationProvider.fetchLatestKnownLocation(onLocationRetrieved())
     }
 
     /**

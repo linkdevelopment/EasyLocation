@@ -39,16 +39,16 @@
         app:layout_constraintTop_toBottomOf="@id/checkBoxSingleRequest" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tlMaxRequestTime"
+        android:id="@+id/tlLocationRequestTimeout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:hint="@string/max_request_time_milli_second"
+        android:hint="@string/location_request_timeout_milli_second"
         app:layout_constraintTop_toBottomOf="@id/checkBoxFetchLastKnownLocation">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtMaxRequestTime"
+            android:id="@+id/edtLocationRequestTimeout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
@@ -67,7 +67,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tlMaxRequestTime" />
+        app:layout_constraintTop_toBottomOf="@id/tlLocationRequestTimeout" />
 
     <TextView
         android:id="@+id/txtLocationOptionsTitle"
@@ -209,5 +209,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        app:constraint_referenced_ids="tlMaxRequestTime,txtProviderOptions,txtLocationOptionsTitle,spPriority,txtLocationPriorityTitle,spOptions,checkBoxSingleRequest,tlFastestInterval" />
+        app:constraint_referenced_ids="tlLocationRequestTimeout,txtProviderOptions,txtLocationOptionsTitle,spPriority,txtLocationPriorityTitle,spOptions,checkBoxSingleRequest,tlFastestInterval" />
 </androidx.constraintlayout.widget.ConstraintLayout>

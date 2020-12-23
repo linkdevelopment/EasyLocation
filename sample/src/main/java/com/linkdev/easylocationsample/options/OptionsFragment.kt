@@ -72,7 +72,7 @@ class OptionsFragment : Fragment() {
     private fun getLocation() {
         val priority = getPriority()
         val fastestInterval = getFastestInterval()
-        val maxRequestTime = getMaxRequestTime()
+        val locationRequestTimeout = getLocationRequestTimeout()
 
         val locationOptions =
             if (spOptions.selectedItemPosition == 0) {
@@ -82,7 +82,7 @@ class OptionsFragment : Fragment() {
             }
 
         mListener.onLocateClicked(
-            getRequestType(), locationOptions, maxRequestTime
+            getRequestType(), locationOptions, locationRequestTimeout
         )
     }
 
@@ -114,8 +114,8 @@ class OptionsFragment : Fragment() {
         spPriority.adapter = arrayAdapter
     }
 
-    private fun getMaxRequestTime(): Long {
-        return edtMaxRequestTime.text.toString().toLong()
+    private fun getLocationRequestTimeout(): Long {
+        return edtLocationRequestTimeout.text.toString().toLong()
     }
 
     private fun getSmallestDisplacement(): Float {

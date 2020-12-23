@@ -16,7 +16,7 @@
     <string name="easyLocationButtonMessage">Uses EasyLocation Builder class to request your location, You will have to handle the location permissions and setting yourself</string>
     <string name="location_options">Location options</string>
     <string name="one_time_request">One time request</string>
-    <string name="max_request_time_milli_second">Max request time (Milli Second)</string>
+    <string name="location_request_timeout_milli_second">Location request timeout (Milli Second)</string>
     <string name="_50000">50000</string>
     <string name="provider_options">Provider options</string>
     <string name="location_options_type">Location Options Type</string>
