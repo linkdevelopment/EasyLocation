@@ -78,33 +78,6 @@ internal class EasyLocationLifeCycleObserver(
     }
 
     /**
-     * Fetch the latest known location and returns the liveData for locationUpdates.
-     */
-    override fun fetchLatestKnownLocation(): LiveData<LocationResult> {
-        fetchLastKnownLocation()
-
-        return mLocationResponseLiveData
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun fetchLastKnownLocation() {
-        if (!EasyLocationUtils.isLocationPermissionGranted(mContext)) {
-            emitLocationResponse(LocationResult.Error(LocationResultError.PermissionDenied()))
-            return
-        }
-
-        if (!EasyLocationUtils.checkLocationSettings(mContext)) {
-            emitLocationResponse(LocationResult.Error(LocationResultError.SettingDisabled()))
-            return
-        }
-
-        mEasyLocationManager.fetchLatestKnownLocation(
-            LocationProvidersTypes.FUSED_LOCATION_PROVIDER,
-            onLocationResultListener()
-        )
-    }
-
-    /**
      * Requests the location updates
      */
     @SuppressLint("MissingPermission")

@@ -48,7 +48,6 @@ class SampleEasyLocationBaseFragment : EasyLocationBaseFragment(), OnOptionsFrag
     private lateinit var requestType: LocationRequestType
     private lateinit var locationOptions: LocationOptions
     private var maxRequestTime: Long = 0
-    private var fetchLastKnownLocation: Boolean = false
 
     companion object {
         const val TAG = "EasyLocationBaseSampleFragment"
@@ -90,13 +89,11 @@ class SampleEasyLocationBaseFragment : EasyLocationBaseFragment(), OnOptionsFrag
     override fun onLocateClicked(
         requestType: LocationRequestType,
         locationOptions: LocationOptions,
-        maxRequestTime: Long,
-        fetchLastKnownLocation: Boolean
+        maxRequestTime: Long
     ) {
         this.requestType = requestType
         this.locationOptions = locationOptions
         this.maxRequestTime = maxRequestTime
-        this.fetchLastKnownLocation = fetchLastKnownLocation
 
         mAdapter.clear()
 
@@ -115,13 +112,12 @@ class SampleEasyLocationBaseFragment : EasyLocationBaseFragment(), OnOptionsFrag
         getLocation(
             locationOptions,
             requestType,
-            fetchLastKnownLocation,
             maxRequestTime
         )
     }
 
     override fun onLocationRetrieved(location: Location) {
-        if (requestType == LocationRequestType.ONE_TIME_REQUEST) {
+        if (requestType == LocationRequestType.ONE_TIME_REQUEST || requestType == LocationRequestType.FETCH_LAST_KNOWN_LOCATION) {
             mOptionsFragment.showLocateButton(true)
             mOptionsFragment.showStopLocationButton(false)
         }

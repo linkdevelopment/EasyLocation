@@ -33,9 +33,4 @@ interface IEasyLocationObserver {
      * Unsubscribe from the location updates.
      */
     fun stopLocationUpdates()
-
-    /**
-     * fetch the latest known location
-     */
-    fun fetchLatestKnownLocation(): LiveData<LocationResult>
 }

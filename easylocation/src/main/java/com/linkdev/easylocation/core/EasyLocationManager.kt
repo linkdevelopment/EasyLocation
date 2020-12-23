@@ -80,7 +80,10 @@ internal class EasyLocationManager(
     ) {
         mLocationResultListener = locationResultListener
 
-        requestLocationUpdates(locationProvidersTypes, locationOptions)
+        if (mLocationRequestType == LocationRequestType.FETCH_LAST_KNOWN_LOCATION)
+            fetchLastKnownLocation(locationProvidersTypes)
+        else
+            requestLocationUpdates(locationProvidersTypes, locationOptions)
 
         startLocationRequestTimer()
     }

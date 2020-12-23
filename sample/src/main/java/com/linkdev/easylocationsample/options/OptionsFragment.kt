@@ -73,7 +73,6 @@ class OptionsFragment : Fragment() {
         val priority = getPriority()
         val fastestInterval = getFastestInterval()
         val maxRequestTime = getMaxRequestTime()
-        val fetchLastKnownLocation = checkBoxFetchLastKnownLocation.isChecked
 
         val locationOptions =
             if (spOptions.selectedItemPosition == 0) {
@@ -83,7 +82,7 @@ class OptionsFragment : Fragment() {
             }
 
         mListener.onLocateClicked(
-            getRequestType(), locationOptions, maxRequestTime, fetchLastKnownLocation
+            getRequestType(), locationOptions, maxRequestTime
         )
     }
 
@@ -141,8 +140,11 @@ class OptionsFragment : Fragment() {
     }
 
     private fun getRequestType(): LocationRequestType {
-        return if (getIsOneTimeRequest())
-            LocationRequestType.ONE_TIME_REQUEST else LocationRequestType.UPDATES
+        return when {
+            getIsOneTimeRequest() -> LocationRequestType.ONE_TIME_REQUEST
+            checkBoxFetchLastKnownLocation.isChecked -> LocationRequestType.FETCH_LAST_KNOWN_LOCATION
+            else -> LocationRequestType.UPDATES
+        }
     }
 
     private fun onLocationOptionChecked(): AdapterView.OnItemSelectedListener? {

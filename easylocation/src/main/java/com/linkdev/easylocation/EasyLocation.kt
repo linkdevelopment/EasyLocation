@@ -59,19 +59,6 @@ class EasyLocation private constructor(
     }
 
     /**
-     * fetch the latest known location.
-     */
-    fun fetchLatestKnownLocation(lifecycle: Lifecycle): LiveData<LocationResult> {
-        mLocationObserver = EasyLocationLifeCycleObserver(
-            mContext, mLocationRequestTimeout, mLocationRequestType
-        )
-
-        lifecycle.addObserver(mLocationObserver as EasyLocationLifeCycleObserver)
-
-        return mLocationObserver?.fetchLatestKnownLocation()!!
-    }
-
-    /**
      * If invoked stops the location updates.
      */
     fun stopLocationUpdates() {

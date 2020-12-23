@@ -77,14 +77,12 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     protected fun getLocation(
         locationOptions: LocationOptions,
         locationRequestType: LocationRequestType = LocationRequestType.UPDATES,
-        fetchLastKnownLocation: Boolean = false,
         locationRequestTimeout: Long = 50000,
         rationaleDialogMessage: String = getString(R.string.easy_location_rationale_message)
     ) {
         mLocationOptions = locationOptions
         mLocationRequestType = locationRequestType
         mLocationRequestTimeout = locationRequestTimeout
-        mFetchLastKnownLocation = fetchLastKnownLocation
 
         checkLocationPermissions(activity, rationaleDialogMessage)
     }
@@ -105,12 +103,8 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
             .setLocationRequestType(mLocationRequestType)
             .build()
 
-        if (mFetchLastKnownLocation)
-            mEasyLocation.fetchLatestKnownLocation(lifecycle)
-                .observe(this, this::onLocationStatusRetrieved)
-        else
-            mEasyLocation.requestLocationUpdates(lifecycle)
-                .observe(this, this::onLocationStatusRetrieved)
+        mEasyLocation.requestLocationUpdates(lifecycle)
+            .observe(this, this::onLocationStatusRetrieved)
     }
 
     private fun onLocationStatusRetrieved(locationResult: LocationResult) {

@@ -8,8 +8,7 @@ interface OnOptionsFragmentInteraction {
     fun onLocateClicked(
         requestType: LocationRequestType,
         locationOptions: LocationOptions,
-        maxRequestTime: Long,
-        fetchLastKnownLocation: Boolean
+        maxRequestTime: Long
     )
 
     fun onStopLocation()
