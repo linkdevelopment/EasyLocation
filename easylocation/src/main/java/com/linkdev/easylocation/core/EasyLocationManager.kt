@@ -48,8 +48,15 @@ internal class EasyLocationManager(
      */
     private var mLocationRequestTimeoutHandler: Handler = Handler(Looper.getMainLooper())
 
+    /**
+     * Callback to emit location updates.
+     */
     private lateinit var mLocationResultListener: LocationResultListener
 
+    /**
+     * Location Provider to request location updates,
+     * currently there is only [FusedLocationProvider]
+     */
     private lateinit var mILocationProvider: ILocationProvider
 
     /**

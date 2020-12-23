@@ -47,6 +47,9 @@ internal class EasyLocationLifeCycleObserver(
      */
     private val mLocationResponseLiveData: MutableLiveData<LocationResult> = MutableLiveData()
 
+    /**
+     * Used to request location updates.
+     */
     private var mEasyLocationManager: EasyLocationManager =
         EasyLocationManager(
             mContext, mLocationRequestTimeout, mLocationRequestType
@@ -55,7 +58,7 @@ internal class EasyLocationLifeCycleObserver(
     /**
      * Requests location updates using [locationOptions] and returns [LocationResult].
      *
-     * @param locationOptions The specs required for retrieving location info, Depending on [locationProvider]:
+     * @param locationOptions The specs required for retrieving location info should be one of
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
      *
