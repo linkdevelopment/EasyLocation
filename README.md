@@ -62,7 +62,7 @@ You will recieve the callbacks in implemented methods
         }
     }
 ```
-If you prefer composition check out [EasyLocation](##EasyLocation)
+If you prefer composition check out [EasyLocation](#EasyLocation)
 
 ## EasyLocation
 * If you want to handle permissions on your own.
