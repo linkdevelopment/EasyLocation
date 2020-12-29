@@ -23,10 +23,10 @@ import kotlinx.android.parcel.Parcelize
 /**
  *  Options for using [FusedLocationProvider]
  *
- * @param interval Desired interval for every location update in milliSeconds<p> @defaults_to 3 Seconds.
+ * @param interval Desired interval for every location update in milliSeconds @defaults_to 5 Seconds.
  * @param priority Get the quality of the request @defaults_to [EasyLocationConstants.DEFAULT_PRIORITY].
  * @param fastestInterval Get the fastest interval of this request, in milliseconds, The system will never provide
- *                  location updates faster than it.<p> @defaults_to 2 milliseconds.
+ *                  location updates faster than it.<p> @defaults_to 1 seconds.
  */
 @Parcelize
 class TimeLocationOptions(

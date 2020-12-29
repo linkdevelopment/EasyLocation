@@ -16,8 +16,20 @@
 package com.linkdev.easylocation.core.models
 
 enum class Priority(val value: Int) {
+    /**
+     * Used to request the most accurate locations available.
+     */
     PRIORITY_HIGH_ACCURACY(100),
+    /**
+     * Used to request "block" level accuracy.
+     */
     PRIORITY_BALANCED_POWER_ACCURACY(102),
+    /**
+     * Used to request "city" level accuracy.
+     */
     PRIORITY_LOW_POWER(104),
+    /**
+     * Used to request the best accuracy possible with zero additional power consumption.
+     */
     PRIORITY_NO_POWER(105),
 }

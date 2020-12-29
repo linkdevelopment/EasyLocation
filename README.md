@@ -38,7 +38,7 @@ Just extend `EasyLocationBaseFragment` and call `getLocation` whenever you need 
     getLocation(
         TimeLocationOptions(),
         LocationRequestType.ONE_TIME_REQUEST,
-        500
+        50000
     )
 ```
 You will recieve the callbacks in implemented methods
@@ -69,7 +69,7 @@ If you prefer composition check out [EasyLocation](#easylocation)
 Using the `EasyLocation` Builder class you initialize the object and call requestLocationUpdates like below:
 ```kotlin
     mEasyLocation = EasyLocation.Builder(mContext, TimeLocationOptions())
-        .setLocationRequestTimeout(500)
+        .setLocationRequestTimeout(50000)
         .setLocationRequestType(LocationRequestType.ONE_TIME_REQUEST)
         .build()
 
@@ -78,6 +78,44 @@ Using the `EasyLocation` Builder class you initialize the object and call reques
 ```
 `requestLocationUpdates()` returns a `LiveData` object in which you will recieve future location updates based on provided `LocationOptions`.
 
+#Custmizations
+For extra custmizations check below
+##set location options settings
+Sets the settings for the location
+```kotlin
+    mEasyLocation = EasyLocation.Builder(mContext, locationOptions)
+```
+Can be one of `TimeLocationOptions` or `DisplacementLocationOptions`
+###TimeLocationOptions
+When you are interested in the location updates in a timely manner, custmized params:
+**interval** Desired interval for every location update in milliSeconds **Default:** 3 Seconds.
+**fastestInterval** Explicitly set the fastest interval for location updates, in milliseconds **Default:** 1 Seconds.
+**priority** Sets the quality of the request.
+###DisplacementLocationOptions
+When you are interested in the location updates in a timely manner, custmized params:
+**smallestDisplacement** Set the minimum displacement between location updates in meters **Default:** 5 meters.
+**fastestInterval** Explicitly set the fastest interval for location updates, in milliseconds **Default:** 1 Seconds.
+**priority** Sets the quality of the request.
+
+
+##set location request timeout - optional
+Sets the max wait time in millisecond for the location update after the request is made or the last update is retrieved,
+If exceeded the request will stop and return `LocationErrorCode.TIME_OUT`.
+```kotlin
+EasyLocation.Builder(mContext, TimeLocationOptions())
+        .setLocationRequestTimeout(50000)
+```
+**Default:** `50000`
+
+##set location request type - optional
+Based on your buisiness and needs for location updates select one of:
+* **ONE_TIME_REQUEST** Return the location only once and then automatically cancel the location updates, Use if you need to know the current location.
+
+* **FETCH_LAST_KNOWN_LOCATION** Return the last known location of the device
+
+* **UPDATES** If should continue returning every update of the location updates.
+
+**Default:** `LocationRequestType.UPDATES`
 
 # Contribute
 Contributions and contributors are always welcome! Help us make DragDismiss better and give back to the community.
