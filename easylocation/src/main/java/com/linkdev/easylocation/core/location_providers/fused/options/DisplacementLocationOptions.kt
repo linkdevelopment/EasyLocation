@@ -15,7 +15,6 @@
  */
 package com.linkdev.easylocation.core.location_providers.fused.options
 
-import com.google.android.gms.location.LocationRequest
 import com.linkdev.easylocation.core.models.EasyLocationConstants
 import com.linkdev.easylocation.core.models.Priority
 import kotlinx.android.parcel.Parcelize
