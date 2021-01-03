@@ -15,7 +15,7 @@
  */
 package com.linkdev.easylocation.core.models
 
-enum class Priority(val value: Int) {
+enum class EasyLocationPriority(val value: Int) {
     /**
      * Used to request the most accurate locations available.
      */

@@ -9,12 +9,14 @@ simplicity of implementation frequently arise during the development.
 
 EasyLocation is built to ease this frequent task by using just a few lines of code, But providing a powerful, wide and compact features too.
 
+![](screenshots/screenshot.gif)
+
 #Setup
-Gradle:
+Either use Gradle:
 ```
 implementation 'com.linkdev.easylocation:easylocation:1.0.0'
 ```
-Maven:
+or Maven:
 ```
 <dependency>
   <groupId>com.linkdev.easylocation</groupId>
@@ -22,6 +24,13 @@ Maven:
   <version>1.0.0</version>
   <type>pom</type>
 </dependency>
+```
+
+Needs location permissions based on your needs to be added to the manifiest:
+```
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 ```
 
 # How to use EasyLocation
@@ -36,9 +45,10 @@ There are multiple ways to use EasyLocation depending on your business using:
 Just extend `EasyLocationBaseFragment` and call `getLocation` whenever you need the location
 ```kotlin
     getLocation(
-        TimeLocationOptions(),
-        LocationRequestType.ONE_TIME_REQUEST,
-        50000
+        locationOptions = TimeLocationOptions(),
+        locationRequestType = LocationRequestType.ONE_TIME_REQUEST,
+        locationRequestTimeout = 50000,
+        rationaleDialogMessage = "Location permission is required to be able to use this feature"
     )
 ```
 You will recieve the callbacks in implemented methods
@@ -74,7 +84,17 @@ Using the `EasyLocation` Builder class you initialize the object and call reques
         .build()
 
     mEasyLocation.requestLocationUpdates(lifecycle)
-        .observe(this, this::onLocationStatusRetrieved)
+        .observe(this, this::onLocationResult)
+
+    private fun onLocationResult(locationResult: LocationResult) {
+        when (locationResult.status) {
+            Status.SUCCESS -> {
+                // Handle on location result success
+            }
+            Status.ERROR ->
+                // Handle location error
+        }
+    }
 ```
 `requestLocationUpdates()` returns a `LiveData` object in which you will recieve future location updates based on provided `LocationOptions`.
 
@@ -88,14 +108,17 @@ Sets the settings for the location
 Can be one of `TimeLocationOptions` or `DisplacementLocationOptions`
 ###TimeLocationOptions
 When you are interested in the location updates in a timely manner, custmized params:
+`TimeLocationOptions(interval Long ,fastestInterval Long ,priority EasyLocationPriority)`
 **interval** Desired interval for every location update in milliSeconds **Default:** 3 Seconds.
 **fastestInterval** Explicitly set the fastest interval for location updates, in milliseconds **Default:** 1 Seconds.
-**priority** Sets the quality of the request.
+**priority** Sets the quality of the request. **Default:** `EasyLocationPriority.PRIORITY_HIGH_ACCURACY`
+
 ###DisplacementLocationOptions
 When you are interested in the location updates in a timely manner, custmized params:
+`TimeLocationOptions(smallestDisplacement Float ,fastestInterval Long ,priority EasyLocationPriority)`
 **smallestDisplacement** Set the minimum displacement between location updates in meters **Default:** 5 meters.
 **fastestInterval** Explicitly set the fastest interval for location updates, in milliseconds **Default:** 1 Seconds.
-**priority** Sets the quality of the request.
+**priority** Sets the quality of the request. **Default:** `EasyLocationPriority.PRIORITY_HIGH_ACCURACY`
 
 
 ##set location request timeout - optional
@@ -118,10 +141,10 @@ Based on your buisiness and needs for location updates select one of:
 **Default:** `LocationRequestType.UPDATES`
 
 # Contribute
-Contributions and contributors are always welcome! Help us make DragDismiss better and give back to the community.
+Contributions and contributors are always welcome! Help us make EasyLocation better and give back to the community.
 
 Found an issue or feel like contributing? Please use [Github][issues]
-Have a question? Please use Stackoverflow with tag [DragDismissLayout][stackoverflow]
+Have a question? Please use Stackoverflow with tag [easylocation_linkdev][stackoverflow]
 
 # License
     Copyright 2020-present Link Development
@@ -138,5 +161,5 @@ Have a question? Please use Stackoverflow with tag [DragDismissLayout][stackover
     See the License for the specific language governing permissions and
     limitations under the License.
 
- [issues]: https://github.com/DragDismissLayout/issues
- [stackoverflow]: http://stackoverflow.com/questions/tagged/DragDismissLayout
+ [issues]: https://github.com/EasyLocation/issues
+ [stackoverflow]: http://stackoverflow.com/questions/tagged/easylocation_linkdev
