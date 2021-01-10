@@ -22,7 +22,7 @@ enum class LocationErrorCode {
     LOCATION_SETTING_DENIED,
 
     /**
-     * Returned When there is an known error from the provider returned with the exception.
+     * Returned When there is a known error from the provider returned with the exception.
      */
     PROVIDER_EXCEPTION,
 }

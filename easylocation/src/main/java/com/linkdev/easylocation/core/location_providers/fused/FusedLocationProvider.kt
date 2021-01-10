@@ -128,13 +128,13 @@ internal class FusedLocationProvider(
                     this.smallestDisplacement = locationOptions.smallestDisplacement
                     this.interval = locationOptions.fastestInterval
                     this.fastestInterval = locationOptions.fastestInterval
-                    this.priority = locationOptions.priority.value
+                    this.priority = locationOptions.easyLocationPriority.value
                 }
             is TimeLocationOptions ->
                 LocationRequest.create().apply {
                     this.interval = locationOptions.interval
                     this.fastestInterval = locationOptions.fastestInterval
-                    this.priority = locationOptions.priority.value
+                    this.priority = locationOptions.easyLocationPriority.value
                 }
             else -> {
                 throw Exception(EasyLocationConstants.ErrorMessages.FUSED_OPTIONS_TYPE_ERROR)

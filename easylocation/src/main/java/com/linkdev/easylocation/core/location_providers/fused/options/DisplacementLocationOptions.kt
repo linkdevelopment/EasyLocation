@@ -15,9 +15,8 @@
  */
 package com.linkdev.easylocation.core.location_providers.fused.options
 
-import com.google.android.gms.location.LocationRequest
 import com.linkdev.easylocation.core.models.EasyLocationConstants
-import com.linkdev.easylocation.core.models.Priority
+import com.linkdev.easylocation.core.models.EasyLocationPriority
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -25,7 +24,7 @@ import kotlinx.android.parcel.Parcelize
  *  with min interval between updates [fastestInterval].
  *
  * @param smallestDisplacement Get the minimum distance between location updates in meters<p> @defaults_to [EasyLocationConstants.DEFAULT_MIN_DISTANCE]
- * @param priority Get the quality of the request @defaults_to [EasyLocationConstants.DEFAULT_PRIORITY]
+ * @param easyLocationPriority Get the quality of the request @defaults_to [EasyLocationConstants.DEFAULT_EASY_LOCATION_PRIORITY]
  * @param fastestInterval Get the fastest interval of this request, in milliseconds, The system will never provide
  *                  location updates faster than it.<p> @defaults_to [EasyLocationConstants.DEFAULT_FASTEST_INTERVAL].
  */
@@ -33,5 +32,5 @@ import kotlinx.android.parcel.Parcelize
 class DisplacementLocationOptions(
     val smallestDisplacement: Float = EasyLocationConstants.DEFAULT_MIN_DISTANCE,
     val fastestInterval: Long = EasyLocationConstants.DEFAULT_FASTEST_INTERVAL,
-    val priority: Priority = EasyLocationConstants.DEFAULT_PRIORITY
+    val easyLocationPriority: EasyLocationPriority = EasyLocationConstants.DEFAULT_EASY_LOCATION_PRIORITY
 ) : LocationOptions()

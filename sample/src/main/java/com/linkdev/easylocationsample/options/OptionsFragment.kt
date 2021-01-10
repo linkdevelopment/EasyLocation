@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import com.linkdev.easylocation.core.location_providers.fused.options.DisplacementLocationOptions
 import com.linkdev.easylocation.core.location_providers.fused.options.TimeLocationOptions
 import com.linkdev.easylocation.core.models.LocationRequestType
-import com.linkdev.easylocation.core.models.Priority
+import com.linkdev.easylocation.core.models.EasyLocationPriority
 import com.linkdev.easylocationsample.R
 import kotlinx.android.synthetic.main.fragment_location_options.*
 
@@ -126,12 +126,12 @@ class OptionsFragment : Fragment() {
         return edtInterval.text.toString().toLong()
     }
 
-    private fun getPriority(): Priority {
+    private fun getPriority(): EasyLocationPriority {
         return when (spPriority.selectedItemPosition) {
-            0 -> Priority.PRIORITY_HIGH_ACCURACY
-            1 -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
-            2 -> Priority.PRIORITY_LOW_POWER
-            else -> Priority.PRIORITY_NO_POWER
+            0 -> EasyLocationPriority.PRIORITY_HIGH_ACCURACY
+            1 -> EasyLocationPriority.PRIORITY_BALANCED_POWER_ACCURACY
+            2 -> EasyLocationPriority.PRIORITY_LOW_POWER
+            else -> EasyLocationPriority.PRIORITY_NO_POWER
         }
     }
 
