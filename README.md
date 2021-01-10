@@ -63,7 +63,7 @@ You will receive the callbacks in implemented methods
            LocationErrorCode.LOCATION_SETTING_DENIED, // Location settings is off
            LocationErrorCode.LOCATION_PERMISSION_DENIED, // Location permissions was denied
            LocationErrorCode.UNKNOWN_ERROR, // Unexpected error
-           LocationErrorCode.TIME_OUT -> // The location request has timedout without any response from the location provider
+           LocationErrorCode.TIME_OUT -> // The location request has timed out without any response from the location provider
                Toast.makeText(mContext, locationResultError.errorMessage, Toast.LENGTH_LONG)
                     .show()
            LocationErrorCode.PROVIDER_EXCEPTION -> // Returned When there is a known error from the provider returned with the exception.
