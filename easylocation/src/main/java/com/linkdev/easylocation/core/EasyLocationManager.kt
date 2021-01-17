@@ -141,8 +141,8 @@ internal class EasyLocationManager(
             override fun onLocationRetrieved(location: Location) {
                 if (mLocationRequestType == LocationRequestType.ONE_TIME_REQUEST)
                     stopLocationUpdates()
-
-                restartTimer()
+                else
+                    restartTimer()
 
                 mLocationResultListener.onLocationRetrieved(location)
             }
