@@ -77,7 +77,7 @@ internal class EasyLocationLifeCycleObserver(
     /**
      * Bind to the service.
      * If the service is in foreground mode, this signals to the service
-     * that since this lifecycle component is in the foreground, and the service can exit foreground mode.
+     * that since this lifecycle component is in the foreground, the service can promote to foreground mode.
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
@@ -137,7 +137,7 @@ internal class EasyLocationLifeCycleObserver(
      * Stops and cancels the location updates.
      */
     override fun stopLocationUpdates() {
-        mEasyLocationForegroundService!!.removeLocationUpdates()
+        mEasyLocationForegroundService?.removeLocationUpdates()
     }
 
     /**
