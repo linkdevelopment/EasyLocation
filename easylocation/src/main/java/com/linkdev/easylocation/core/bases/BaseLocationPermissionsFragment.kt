@@ -68,7 +68,7 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
     }
 
     //* Location Permission *//
-    fun checkLocationPermissions(context: Context?, rationaleDialogMessage: String) {
+    fun checkLocationPermissions(context: Context, rationaleDialogMessage: String) {
         when {
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 showLocationPermissionRationalDialog(rationaleDialogMessage)
@@ -85,10 +85,15 @@ abstract class BaseLocationPermissionsFragment : Fragment() {
         }
     }
 
-    private fun checkLocationSelfPermission(context: Context?): Boolean {
+    private fun checkLocationSelfPermission(context: Context): Boolean {
         return ActivityCompat.checkSelfPermission(
-            context!!, Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(

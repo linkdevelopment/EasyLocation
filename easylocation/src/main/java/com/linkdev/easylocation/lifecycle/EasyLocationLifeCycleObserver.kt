@@ -16,11 +16,16 @@
 package com.linkdev.easylocation.lifecycle
 
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.location.Location
+import android.os.IBinder
+import android.util.Log
 import androidx.lifecycle.*
 import com.linkdev.easylocation.IEasyLocationObserver
-import com.linkdev.easylocation.core.EasyLocationManager
 import com.linkdev.easylocation.core.location_providers.LocationResultListener
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.*
@@ -39,21 +44,79 @@ import com.linkdev.easylocation.core.utils.EasyLocationUtils
 internal class EasyLocationLifeCycleObserver(
     private val mContext: Context,
     private val mLocationRequestTimeout: Long = EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT,
-    private val mLocationRequestType: LocationRequestType = LocationRequestType.UPDATES
+    private val mLocationRequestType: LocationRequestType = LocationRequestType.UPDATES,
+    private val mNotification: Notification,
 ) : LifecycleObserver, IEasyLocationObserver {
+
+    // A reference to the service used to get location updates.
+    private var mEasyLocationForegroundService: EasyLocationForegroundService? = null
+
+    // Tracks the bound state of the service.
+    private var mBound = false
+
+    // The location request received from the client
+    private lateinit var mLocationOptions: LocationOptions
+
+    // Monitors the state of the connection to the service.
+    private val mOnServiceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder: EasyLocationForegroundService.LocalBinder =
+                service as EasyLocationForegroundService.LocalBinder
+
+            mEasyLocationForegroundService = binder.getService()
+            startLocationUpdates(mLocationOptions)
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mEasyLocationForegroundService = null
+            mBound = false
+        }
+    }
+
+    /**
+     * Bind to the service.
+     * If the service is in foreground mode, this signals to the service
+     * that since this lifecycle component is in the foreground, and the service can exit foreground mode.
+     */
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart() {
+        val intent = Intent(mContext, EasyLocationForegroundService::class.java)
+        intent.apply {
+            putExtra(
+                EasyLocationConstants.EXTRA_EASY_LOCATION_REQUEST,
+                EasyLocationRequest(mLocationRequestTimeout, mLocationRequestType)
+            )
+            putExtra(
+                EasyLocationConstants.EXTRA_NOTIFICATION,
+                mNotification
+            )
+        }
+
+        mContext.startService(intent)
+        mContext.bindService(intent, mOnServiceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onStop() {
+        if (mBound) {
+            // Unbind from the service. This signals to the service that this activity is no longer
+            // in the foreground, and the service can respond by promoting itself to a foreground
+            // service.
+            mContext.unbindService(mOnServiceConnection)
+            mBound = false
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
+        stopLocationUpdates()
+    }
 
     /**
      * The liveData used to emit the location updates
      */
     private val mLocationResponseLiveData: MutableLiveData<LocationResult> = MutableLiveData()
-
-    /**
-     * Used to request location updates.
-     */
-    private var mEasyLocationManager: EasyLocationManager =
-        EasyLocationManager(
-            mContext, mLocationRequestTimeout, mLocationRequestType
-        )
 
     /**
      * Requests location updates using [locationOptions] and returns [LocationResult].
@@ -65,7 +128,7 @@ internal class EasyLocationLifeCycleObserver(
      * @return LiveData object to listen for location updates with [LocationResult].
      */
     override fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult> {
-        startLocationUpdates(locationOptions)
+        mLocationOptions = locationOptions
 
         return mLocationResponseLiveData
     }
@@ -74,7 +137,7 @@ internal class EasyLocationLifeCycleObserver(
      * Stops and cancels the location updates.
      */
     override fun stopLocationUpdates() {
-        mEasyLocationManager.stopLocationUpdates()
+        mEasyLocationForegroundService!!.removeLocationUpdates()
     }
 
     /**
@@ -82,6 +145,10 @@ internal class EasyLocationLifeCycleObserver(
      */
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates(locationOptions: LocationOptions) {
+        Log.i(
+            "LifeCycleObserver",
+            "startLocationUpdates: EasyLocationForegroundService = $mEasyLocationForegroundService"
+        )
         if (!EasyLocationUtils.isLocationPermissionGranted(mContext)) {
             emitLocationResponse(LocationResult.Error(LocationResultError.PermissionDenied()))
             return
@@ -92,8 +159,7 @@ internal class EasyLocationLifeCycleObserver(
             return
         }
 
-        mEasyLocationManager.requestLocationUpdates(
-            LocationProvidersTypes.FUSED_LOCATION_PROVIDER,
+        mEasyLocationForegroundService?.requestLocationUpdates(
             locationOptions,
             onLocationResultListener()
         )
@@ -119,10 +185,5 @@ internal class EasyLocationLifeCycleObserver(
      */
     private fun emitLocationResponse(locationResult: LocationResult?) {
         mLocationResponseLiveData.value = locationResult
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
-        stopLocationUpdates()
     }
 }

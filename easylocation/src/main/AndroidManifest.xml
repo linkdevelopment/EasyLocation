@@ -1,1 +1,8 @@
-<manifest package="com.linkdev.easylocation" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.linkdev.easylocation">
+
+    <application>
+        <service android:foregroundServiceType="location"
+            android:name=".lifecycle.EasyLocationForegroundService" />
+    </application>
+</manifest>

@@ -23,11 +23,15 @@ internal object EasyLocationConstants {
     const val DEFAULT_INTERVAL: Long = 5000
     const val DEFAULT_FASTEST_INTERVAL: Long = 1000
     const val DEFAULT_LOCATION_REQUEST_TIMEOUT: Long = 50000
-    val DEFAULT_EASY_LOCATION_PRIORITY: EasyLocationPriority = EasyLocationPriority.PRIORITY_HIGH_ACCURACY
+    val DEFAULT_EASY_LOCATION_PRIORITY: EasyLocationPriority =
+        EasyLocationPriority.PRIORITY_HIGH_ACCURACY
     const val INFINITE_REQUEST_TIME: Long = -1
     val DEFAULT_LOCATION_REQUEST_TYPE: LocationRequestType = LocationRequestType.UPDATES
 
     val DEFAULT_FUSED_OPTIONS: LocationOptions = TimeLocationOptions()
+
+    const val EXTRA_NOTIFICATION = "NOTIFICATION"
+    const val EXTRA_EASY_LOCATION_REQUEST = "DEFAULT_EASY_LOCATION_REQUEST"
 
     object ErrorMessages {
         const val UNKNOWN_PROVIDER =
