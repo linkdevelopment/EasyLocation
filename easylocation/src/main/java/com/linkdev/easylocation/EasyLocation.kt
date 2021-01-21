@@ -17,6 +17,7 @@ package com.linkdev.easylocation
 
 import android.app.Notification
 import android.content.Context
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
@@ -76,7 +77,7 @@ class EasyLocation private constructor(
         /**
          * The notification used in the notification helper
          */
-        private var mNotification: Notification = EasyLocationNotification().notification(mContext)
+        private var mNotification: Notification = EasyLocationNotification().notification(mContext,)
 
         /**
          * Max location request time before timeout and sending location update failed if the location was not retrieved.
@@ -136,15 +137,23 @@ class EasyLocation private constructor(
             notificationID: Int,
             notificationTitle: String,
             notificationMessage: String,
-            channelID: String
+            icon: Int,
+            channelID: String,
+            action1: NotificationCompat.Action? = null,
+            action2: NotificationCompat.Action? = null,
+            action3: NotificationCompat.Action? = null,
         ): Builder {
             mNotification = EasyLocationNotification()
                 .notification(
                     mContext,
                     notificationTitle,
                     notificationMessage,
+                    icon,
                     channelID,
-                    notificationID
+                    notificationID,
+                    action1,
+                    action2,
+                    action3
                 )
             return this
         }

@@ -60,7 +60,7 @@ internal class EasyLocationForegroundService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         mNotification =
             intent.getParcelableExtra(EasyLocationConstants.EXTRA_NOTIFICATION)
-                ?: EasyLocationNotification().notification(applicationContext)
+                ?: EasyLocationNotification().notification(applicationContext,)
 
         val easyLocationRequest =
             intent.getParcelableExtra<EasyLocationRequest>(EasyLocationConstants.EXTRA_EASY_LOCATION_REQUEST)
@@ -132,6 +132,7 @@ internal class EasyLocationForegroundService : Service() {
     fun removeLocationUpdates() {
         requestingLocation = false
         mEasyLocationManager.stopLocationUpdates()
+        stopSelf()
     }
 
     /**

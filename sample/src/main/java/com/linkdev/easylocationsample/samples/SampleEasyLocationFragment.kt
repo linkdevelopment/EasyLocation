@@ -17,6 +17,7 @@ package com.linkdev.easylocationsample.samples
 
 import android.Manifest
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -30,6 +31,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ApiException
@@ -40,6 +42,7 @@ import com.linkdev.easylocation.EasyLocation
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.*
 import com.linkdev.easylocation.core.models.LocationResult
+import com.linkdev.easylocationsample.LocationMainActivity
 import com.linkdev.easylocationsample.R
 import com.linkdev.easylocationsample.options.OnOptionsFragmentInteraction
 import com.linkdev.easylocationsample.options.OptionsFragment
@@ -113,7 +116,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
 
         mAdapter.clear()
 
-        checkLocationPermissions(mContext, getString(R.string.locationPermissionIsRequired))
+        checkLocationPermissions(getString(R.string.locationPermissionIsRequired))
     }
 
     override fun onStopLocation() {
@@ -125,9 +128,25 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
         locationOptions: LocationOptions,
         locationRequestTimeout: Long
     ) {
+        val pendingIntent =
+            PendingIntent.getActivity(
+                mContext,
+                0,
+                Intent(mContext, LocationMainActivity::class.java),
+                0
+            )
+
         mEasyLocation = EasyLocation.Builder(mContext, locationOptions)
             .setLocationRequestTimeout(locationRequestTimeout)
             .setLocationRequestType(requestType)
+            .setNotification(
+                notificationID = 123456,
+                notificationTitle = "EasyLocation Title",
+                notificationMessage = "EasyLocation Message",
+                icon = R.mipmap.ic_launcher,
+                channelID = "Channel ID",
+                action1 = NotificationCompat.Action(null, "Open activity", pendingIntent)
+            )
             .build()
 
         mEasyLocation.requestLocationUpdates(lifecycle)
@@ -200,7 +219,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     }
 
     private fun onLocationPermissionGranted() {
-        checkLocationSettings(activity)
+        checkLocationSettings()
     }
 
     private fun onLocationPermissionDenied() {
@@ -216,12 +235,12 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     }
 
     //* Location Permission *//
-    private fun checkLocationPermissions(context: Context?, rationaleDialogMessage: String) {
+    private fun checkLocationPermissions(rationaleDialogMessage: String) {
         when {
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 showLocationPermissionRationalDialog(rationaleDialogMessage)
             }
-            checkLocationSelfPermission(context) -> {
+            checkLocationSelfPermission() -> {
                 requestPermissions(
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     MY_PERMISSIONS_REQUEST_FINE_LOCATION
@@ -233,7 +252,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
         }
     }
 
-    private fun checkLocationSelfPermission(context: Context?): Boolean {
+    private fun checkLocationSelfPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             mContext, Manifest.permission.ACCESS_FINE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
@@ -254,7 +273,7 @@ class SampleEasyLocationFragment : Fragment(), OnOptionsFragmentInteraction {
     }
 
     //* Location Setting *//
-    private fun checkLocationSettings(context: Context?) {
+    private fun checkLocationSettings() {
         val locationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)

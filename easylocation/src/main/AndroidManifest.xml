@@ -2,7 +2,10 @@
     package="com.linkdev.easylocation">
 
     <application>
-        <service android:foregroundServiceType="location"
-            android:name=".lifecycle.EasyLocationForegroundService" />
+        <service
+            android:name=".lifecycle.EasyLocationForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 </manifest>

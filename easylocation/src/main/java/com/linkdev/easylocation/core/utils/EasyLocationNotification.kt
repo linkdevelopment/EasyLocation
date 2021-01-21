@@ -47,8 +47,12 @@ internal class EasyLocationNotification {
         context: Context,
         title: String = context.getString(R.string.notificationTitle),
         message: String = context.getString(R.string.notificationMessage),
+        icon: Int = 0,
         channelID: String = context.getString(R.string.notificationChannel),
         notificationID: Int? = null,
+        action1: NotificationCompat.Action? = null,
+        action2: NotificationCompat.Action? = null,
+        action3: NotificationCompat.Action? = null
     ): Notification {
         mChannelID = channelID
 
@@ -60,11 +64,21 @@ internal class EasyLocationNotification {
         val builder = NotificationCompat.Builder(context, mChannelID)
             .setContentText(message)
             .setContentTitle(title)
+            .setSmallIcon(icon)
             .setOngoing(true)
             .setPriority(Notification.PRIORITY_HIGH)
             .setTicker(message)
             .setWhen(System.currentTimeMillis())
 
+        if (action1 != null) {
+            builder.addAction(action1)
+        }
+        if (action2 != null) {
+            builder.addAction(action2)
+        }
+        if (action3 != null) {
+            builder.addAction(action3)
+        }
         // Set the Channel ID for Android O.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId(mChannelID) // Channel ID
