@@ -22,8 +22,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.location.Location
+import android.os.Handler
 import android.os.IBinder
-import android.util.Log
+import android.os.Looper
 import androidx.lifecycle.*
 import com.linkdev.easylocation.IEasyLocationObserver
 import com.linkdev.easylocation.core.location_providers.LocationResultListener
@@ -54,6 +55,18 @@ internal class EasyLocationLifeCycleObserver(
     // Tracks the bound state of the service.
     private var mBound = false
 
+    // The intent used to start the Foreground service
+    private val mIntent = Intent(mContext, EasyLocationForegroundService::class.java).apply {
+        putExtra(
+            EasyLocationConstants.EXTRA_EASY_LOCATION_REQUEST,
+            EasyLocationRequest(mLocationRequestTimeout, mLocationRequestType)
+        )
+        putExtra(
+            EasyLocationConstants.EXTRA_NOTIFICATION,
+            mNotification
+        )
+    }
+
     // The location request received from the client
     private lateinit var mLocationOptions: LocationOptions
 
@@ -64,7 +77,6 @@ internal class EasyLocationLifeCycleObserver(
                 service as EasyLocationForegroundService.LocalBinder
 
             mEasyLocationForegroundService = binder.getService()
-            startLocationUpdates(mLocationOptions)
             mBound = true
         }
 
@@ -81,20 +93,7 @@ internal class EasyLocationLifeCycleObserver(
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
-        val intent = Intent(mContext, EasyLocationForegroundService::class.java)
-        intent.apply {
-            putExtra(
-                EasyLocationConstants.EXTRA_EASY_LOCATION_REQUEST,
-                EasyLocationRequest(mLocationRequestTimeout, mLocationRequestType)
-            )
-            putExtra(
-                EasyLocationConstants.EXTRA_NOTIFICATION,
-                mNotification
-            )
-        }
-
-        mContext.startService(intent)
-        mContext.bindService(intent, mOnServiceConnection, Context.BIND_AUTO_CREATE)
+        mContext.bindService(mIntent, mOnServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -121,6 +120,9 @@ internal class EasyLocationLifeCycleObserver(
     /**
      * Requests location updates using [locationOptions] and returns [LocationResult].
      *
+     * This method starts the service and after a delayed 200 millis it starts the location updates,
+     * The delay is to give the service a chance to start.
+     *
      * @param locationOptions The specs required for retrieving location info should be one of
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
@@ -129,6 +131,12 @@ internal class EasyLocationLifeCycleObserver(
      */
     override fun requestLocationUpdates(locationOptions: LocationOptions): LiveData<LocationResult> {
         mLocationOptions = locationOptions
+
+        mContext.startService(mIntent)
+        Handler(Looper.getMainLooper()).postDelayed(
+            { startLocationUpdates(mLocationOptions) },
+            EasyLocationConstants.FOREGROUND_SERVICE_LOCATION_REQUEST_DELAY
+        )
 
         return mLocationResponseLiveData
     }

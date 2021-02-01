@@ -27,6 +27,7 @@ internal object EasyLocationConstants {
         EasyLocationPriority.PRIORITY_HIGH_ACCURACY
     const val INFINITE_REQUEST_TIME: Long = -1
     val DEFAULT_LOCATION_REQUEST_TYPE: LocationRequestType = LocationRequestType.UPDATES
+    const val FOREGROUND_SERVICE_LOCATION_REQUEST_DELAY: Long = 200
 
     val DEFAULT_FUSED_OPTIONS: LocationOptions = TimeLocationOptions()
 
