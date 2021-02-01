@@ -6,4 +6,5 @@
     <string name="notificationTitle">Easy location Foreground Service</string>
     <string name="notificationMessage">Location updates are running in the background</string>
     <string name="notificationChannel">Location Channel</string>
+    <string name="locationNotificationChannel">Location Notification Channel</string>
 </resources>

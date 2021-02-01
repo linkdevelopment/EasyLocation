@@ -93,7 +93,7 @@ class EasyLocation private constructor(
             EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TYPE
 
         /**
-         * Max location request time before timeout and sending location update failed if the location was not retrieved.
+         * Sets max location request time before timeout and sending location update failed if the location was not retrieved.
          * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
          */
         fun setLocationRequestTimeout(locationRequestTimeout: Long): Builder {
@@ -102,7 +102,7 @@ class EasyLocation private constructor(
         }
 
         /**
-         * The location request type [LocationRequestType]
+         * Sets the location request type [LocationRequestType]
          */
         fun setLocationRequestType(locationRequestType: LocationRequestType): Builder {
             mLocationRequestType = locationRequestType

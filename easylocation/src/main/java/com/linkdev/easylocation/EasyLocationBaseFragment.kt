@@ -26,6 +26,7 @@ import com.linkdev.easylocation.core.models.LocationRequestType
 import com.linkdev.easylocation.core.models.LocationResult
 import com.linkdev.easylocation.core.models.LocationResultError
 import com.linkdev.easylocation.core.models.Status
+import com.linkdev.easylocation.core.utils.EasyLocationNotification
 import kotlin.properties.Delegates
 
 /**
@@ -48,7 +49,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     private var mLocationRequestTimeout by Delegates.notNull<Long>()
 
     private var mNotification: Notification? = null
-    private var mNotificationID: Int = 123456
+    private var mNotificationID: Int = EasyLocationNotification.NOTIFICATION_ID
 
     /**
      * Called when both LocationPermission and locationSetting are granted.
@@ -86,7 +87,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
         locationRequestType: LocationRequestType = LocationRequestType.UPDATES,
         locationRequestTimeout: Long = 50000,
         notification: Notification? = null,
-        notificationID: Int = 123456,
+        notificationID: Int = EasyLocationNotification.NOTIFICATION_ID,
         rationaleDialogMessage: String = getString(R.string.easy_location_rationale_message)
     ) {
         mLocationOptions = locationOptions

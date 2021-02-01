@@ -31,6 +31,9 @@ internal class EasyLocationTimeoutHelper(
         mTimeoutHandler.postDelayed(mOnTimedOutRunnable, mLocationRequestTimeout)
     }
 
+    /**
+     * Stops the location timer.
+     */
     fun stop() {
         mTimeoutHandler.removeCallbacks(mOnTimedOutRunnable)
     }

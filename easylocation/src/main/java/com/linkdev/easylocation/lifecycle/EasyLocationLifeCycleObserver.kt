@@ -142,13 +142,13 @@ internal class EasyLocationLifeCycleObserver(
 
     /**
      * Requests the location updates
+     *
+     * @param locationOptions The specs required for retrieving location info should be one of
+     *      + [DisplacementFusedLocationOptions]
+     *      + [TimeFusedLocationOptions]
      */
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates(locationOptions: LocationOptions) {
-        Log.i(
-            "LifeCycleObserver",
-            "startLocationUpdates: EasyLocationForegroundService = $mEasyLocationForegroundService"
-        )
         if (!EasyLocationUtils.isLocationPermissionGranted(mContext)) {
             emitLocationResponse(LocationResult.Error(LocationResultError.PermissionDenied()))
             return

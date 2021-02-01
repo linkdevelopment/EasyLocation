@@ -57,10 +57,14 @@ internal class EasyLocationForegroundService : Service() {
      */
     private var mChangingConfiguration = false
     private var requestingLocation: Boolean = false
+
+    /**
+     * Initializes the [mNotification] and [mEasyLocationManager].
+     */
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         mNotification =
             intent.getParcelableExtra(EasyLocationConstants.EXTRA_NOTIFICATION)
-                ?: EasyLocationNotification().notification(applicationContext,)
+                ?: EasyLocationNotification().notification(applicationContext)
 
         val easyLocationRequest =
             intent.getParcelableExtra<EasyLocationRequest>(EasyLocationConstants.EXTRA_EASY_LOCATION_REQUEST)
@@ -115,6 +119,13 @@ internal class EasyLocationForegroundService : Service() {
 
     /**
      * Makes a request for location updates.
+     *
+     * @param locationOptions The specs required for retrieving location info should be one of
+     *      + [DisplacementFusedLocationOptions]
+     *      + [TimeFusedLocationOptions]
+     *
+     * @param onLocationResultListener This listener will be invoked with the updates from the location provider.
+     *
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun requestLocationUpdates(

@@ -42,6 +42,16 @@ internal class EasyLocationNotification {
 
     /**
      * Returns default notification
+     *
+     * @param context Context
+     * @param title notification title
+     * @param message notification message
+     * @param icon notification icon
+     * @param channelID Notification channel id
+     * @param notificationID notification identifier to be registered with in the [NotificationManager]
+     * @param action1 notification action button
+     * @param action2 notification action button
+     * @param action3 notification action button
      */
     fun notification(
         context: Context,
@@ -90,7 +100,7 @@ internal class EasyLocationNotification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
                 mChannelID,
-                "Foreground Service Channel",
+                context.getString(R.string.locationNotificationChannel),
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
