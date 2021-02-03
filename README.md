@@ -11,6 +11,16 @@ EasyLocation is built to ease this frequent task by using just a few lines of co
 
 ![](screenshots/screenshot.gif)
 
+In latest updates your app will not have access to locaiton updates when the app is not visible to the user,
+Under the hood EasyLocation uses a self promoting foreground service to request location updates,
+When the bound client is not visible a foreground service with notification is displayed checkout [Customizations](#customizations).
+For more info check out [developer.android](https://developer.android.com/training/location/permissions#foreground).
+
+* EasyLocation supports latest location updates from android 11 and backward.
+* EasyLocation supports your different [LocationRequest](#set-location-request-type) needs.
+* EasyLocaiton supports [timeout](#set-location-request-timeout---optional) requests.
+* EasyLocation is Kotlin-Idiomatic, written completely in kotlin.
+
 #Setup
 Either use Gradle:
 ```
@@ -30,7 +40,7 @@ Needs location permissions based on your needs to be added to the manifest:
 ```
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
 # How to use EasyLocation
@@ -48,6 +58,8 @@ Just extend `EasyLocationBaseFragment` and call `getLocation` whenever you need 
         locationOptions = TimeLocationOptions(),
         locationRequestType = LocationRequestType.ONE_TIME_REQUEST,
         locationRequestTimeout = 50000,
+        notification: Notification? = customNotification,
+        notificationID: Int = 123456,
         rationaleDialogMessage = "Location permission is required to be able to use this feature"
     )
 ```
@@ -80,6 +92,14 @@ Using the `EasyLocation` Builder class you initialize the object and call reques
     mEasyLocation = EasyLocation.Builder(mContext, TimeLocationOptions())
         .setLocationRequestTimeout(50000)
         .setLocationRequestType(LocationRequestType.ONE_TIME_REQUEST)
+        .setNotification(
+            notificationID = 123456,
+            notificationTitle = "EasyLocation Title",
+            notificationMessage = "EasyLocation Message",
+            icon = R.mipmap.ic_launcher,
+            channelID = "Channel ID",
+            action1 = NotificationCompat.Action(null, "Open activity", pendingIntent)
+        )
         .build()
 
     mEasyLocation.requestLocationUpdates(lifecycle)
@@ -130,6 +150,29 @@ When you are interested in the location updates in a timely manner, customized p
 * **fastestInterval** Explicitly set the fastest interval for location updates, in milliseconds **Default:** 1 Seconds.
 * **priority** Sets the quality of the request. **Default:** `EasyLocationPriority.PRIORITY_HIGH_ACCURACY`
 
+##setNotification
+```kotlin
+EasyLocation.Builder(mContext, TimeLocationOptions())
+        .setNotification(
+                notificationID = 123456,
+                notificationTitle = "EasyLocation Title",
+                notificationMessage = "EasyLocation Message",
+                icon = R.mipmap.ic_launcher,
+                channelID = "Channel ID",
+                action1 = NotificationCompat.Action(null, "Open activity", pendingIntent)
+            )
+```
+Sets the location notification when the service is promoted to a foreground service.
+
+##setCustomNotification
+```kotlin
+EasyLocation.Builder(mContext, TimeLocationOptions())
+        .setCustomNotification(
+            notificationID = 123456,
+            notification = notification
+        )
+```
+Sets the location notification when the service is promoted to a foreground service.
 
 ##set location request timeout - optional
 Sets the max wait time in millisecond for the location update after the request is made or the last update is retrieved,

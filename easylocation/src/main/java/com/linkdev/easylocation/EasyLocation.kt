@@ -15,13 +15,16 @@
  */
 package com.linkdev.easylocation
 
+import android.app.Notification
 import android.content.Context
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.EasyLocationConstants
 import com.linkdev.easylocation.core.models.LocationRequestType
 import com.linkdev.easylocation.core.models.LocationResult
+import com.linkdev.easylocation.core.utils.EasyLocationNotification
 import com.linkdev.easylocation.lifecycle.EasyLocationLifeCycleObserver
 
 /**
@@ -34,6 +37,7 @@ class EasyLocation private constructor(
     private val mLocationOptions: LocationOptions,
     private val mLocationRequestTimeout: Long,
     private val mLocationRequestType: LocationRequestType,
+    private val mNotification: Notification
 ) {
 
     /**
@@ -50,7 +54,7 @@ class EasyLocation private constructor(
      */
     fun requestLocationUpdates(lifecycle: Lifecycle): LiveData<LocationResult> {
         mLocationObserver = EasyLocationLifeCycleObserver(
-            mContext, mLocationRequestTimeout, mLocationRequestType
+            mContext, mLocationRequestTimeout, mLocationRequestType, mNotification
         )
 
         lifecycle.addObserver(mLocationObserver as EasyLocationLifeCycleObserver)
@@ -68,7 +72,12 @@ class EasyLocation private constructor(
     /**
      * This Builder is used to initialize the [EasyLocation] to register for location updates.
      */
-    class Builder(private val context: Context, private val mLocationOptions: LocationOptions) {
+    class Builder(private val mContext: Context, private val mLocationOptions: LocationOptions) {
+
+        /**
+         * The notification used in the notification helper
+         */
+        private var mNotification: Notification = EasyLocationNotification().notification(mContext,)
 
         /**
          * Max location request time before timeout and sending location update failed if the location was not retrieved.
@@ -84,7 +93,7 @@ class EasyLocation private constructor(
             EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TYPE
 
         /**
-         * Max location request time before timeout and sending location update failed if the location was not retrieved.
+         * Sets max location request time before timeout and sending location update failed if the location was not retrieved.
          * use [EasyLocationConstants.INFINITE_REQUEST_TIME] to never revoke the location updates listener.
          */
         fun setLocationRequestTimeout(locationRequestTimeout: Long): Builder {
@@ -93,10 +102,59 @@ class EasyLocation private constructor(
         }
 
         /**
-         * The location request type [LocationRequestType]
+         * Sets the location request type [LocationRequestType]
          */
         fun setLocationRequestType(locationRequestType: LocationRequestType): Builder {
             mLocationRequestType = locationRequestType
+            return this
+        }
+
+        /**
+         * Set the notification for the foreground service with your own custom notification as opposed to [setNotification].
+         *
+         * @param notificationID The notificationID used to show the location foreground service.
+         * @param notification Your custom notification.
+         *
+         * @see [setNotification]
+         */
+        fun setCustomNotification(notificationID: Int, notification: Notification): Builder {
+            mNotification = notification
+            EasyLocationNotification.NOTIFICATION_ID = notificationID
+            return this
+        }
+
+        /**
+         * Set the notification for the foreground service params directly.
+         *
+         * @param notificationID the notificationID used to show the location foreground service.
+         * @param notificationTitle The notification title.
+         * @param notificationMessage The notification message.
+         * @param channelID The channel created for the notification.
+         *
+         * @see setCustomNotification
+         */
+        fun setNotification(
+            notificationID: Int,
+            notificationTitle: String,
+            notificationMessage: String,
+            icon: Int,
+            channelID: String,
+            action1: NotificationCompat.Action? = null,
+            action2: NotificationCompat.Action? = null,
+            action3: NotificationCompat.Action? = null,
+        ): Builder {
+            mNotification = EasyLocationNotification()
+                .notification(
+                    mContext,
+                    notificationTitle,
+                    notificationMessage,
+                    icon,
+                    channelID,
+                    notificationID,
+                    action1,
+                    action2,
+                    action3
+                )
             return this
         }
 
@@ -105,10 +163,11 @@ class EasyLocation private constructor(
          */
         fun build(): EasyLocation {
             return EasyLocation(
-                context,
+                mContext,
                 mLocationOptions,
                 mLocationRequestTimeout,
-                mLocationRequestType
+                mLocationRequestType,
+                mNotification
             )
         }
     }

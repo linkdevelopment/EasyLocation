@@ -18,8 +18,6 @@ package com.linkdev.easylocation.core
 import android.Manifest
 import android.content.Context
 import android.location.Location
-import android.os.Handler
-import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.linkdev.easylocation.core.location_providers.ILocationProvider
 import com.linkdev.easylocation.core.location_providers.LocationProvidersFactory
@@ -27,6 +25,7 @@ import com.linkdev.easylocation.core.location_providers.LocationResultListener
 import com.linkdev.easylocation.core.location_providers.fused.FusedLocationProvider
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.*
+import com.linkdev.easylocation.core.utils.EasyLocationTimeoutHelper
 
 /**
  * This class Manages the location timeout updates request,
@@ -44,11 +43,6 @@ internal class EasyLocationManager(
 ) {
 
     /**
-     * Handler for request timeout
-     */
-    private var mLocationRequestTimeoutHandler: Handler = Handler(Looper.getMainLooper())
-
-    /**
      * Callback to emit location updates.
      */
     private lateinit var mLocationResultListener: LocationResultListener
@@ -59,12 +53,12 @@ internal class EasyLocationManager(
      */
     private lateinit var mILocationProvider: ILocationProvider
 
+    private val mTimeoutHelper = EasyLocationTimeoutHelper(mLocationRequestTimeout, onTimeout())
+
     /**
-     * Requests location updates from the [locationProvidersTypes] using [locationOptions].
+     * Requests location updates using [locationOptions].
      *
-     * @param locationProvidersTypes Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
-     *
-     * @param locationOptions The specs required for retrieving location info, Depending on [locationProvidersTypes]:
+     * @param locationOptions The specs required for retrieving location info:
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
      *
@@ -74,18 +68,17 @@ internal class EasyLocationManager(
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun requestLocationUpdates(
-        locationProvidersTypes: LocationProvidersTypes,
         locationOptions: LocationOptions,
         locationResultListener: LocationResultListener,
     ) {
         mLocationResultListener = locationResultListener
 
         if (mLocationRequestType == LocationRequestType.FETCH_LAST_KNOWN_LOCATION)
-            fetchLastKnownLocation(locationProvidersTypes)
+            fetchLastKnownLocation()
         else
-            requestLocationUpdates(locationProvidersTypes, locationOptions)
+            requestLocationUpdates(locationOptions)
 
-        startLocationRequestTimer()
+        mTimeoutHelper.startLocationRequestTimer()
     }
 
     /**
@@ -95,40 +88,31 @@ internal class EasyLocationManager(
         if (::mILocationProvider.isInitialized)
             mILocationProvider.stopLocationUpdates()
 
-        mLocationRequestTimeoutHandler.removeCallbacks(timeoutRunnable)
+        mTimeoutHelper.stop()
     }
 
     /**
-     * Requests location updates from the [locationProvidersTypes] using [locationOptions].
+     * Requests location updates [locationOptions].
      *
-     * @param locationProvidersTypes Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
-     *
-     * @param locationOptions The specs required for retrieving location info, Depending on [locationProvidersTypes]:
+     * @param locationOptions The specs required for retrieving location info:
      *      + [DisplacementFusedLocationOptions]
      *      + [TimeFusedLocationOptions]
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun requestLocationUpdates(
-        locationProvidersTypes: LocationProvidersTypes,
-        locationOptions: LocationOptions
-    ) {
+    private fun requestLocationUpdates(locationOptions: LocationOptions) {
         mILocationProvider = LocationProvidersFactory(mContext)
-            .getLocationProvider(locationProvidersTypes, locationOptions)
+            .getLocationProvider(LocationProvidersTypes.FUSED_LOCATION_PROVIDER, locationOptions)
 
         mILocationProvider.requestLocationUpdates(onLocationRetrieved())
     }
 
     /**
      * fetch the latest known location.
-     *
-     * @param locationProvidersTypes Represents the location provider used to retrieve the location one of [LocationProvidersTypes] enum values.
      */
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    private fun fetchLastKnownLocation(
-        locationProvidersTypes: LocationProvidersTypes
-    ) {
+    private fun fetchLastKnownLocation() {
         mILocationProvider = LocationProvidersFactory(mContext)
-            .getLocationProvider(locationProvidersTypes)
+            .getLocationProvider(LocationProvidersTypes.FUSED_LOCATION_PROVIDER)
 
         mILocationProvider.fetchLatestKnownLocation(onLocationRetrieved())
     }
@@ -141,8 +125,8 @@ internal class EasyLocationManager(
             override fun onLocationRetrieved(location: Location) {
                 if (mLocationRequestType == LocationRequestType.ONE_TIME_REQUEST)
                     stopLocationUpdates()
-
-                restartTimer()
+                else
+                    mTimeoutHelper.restartTimer()
 
                 mLocationResultListener.onLocationRetrieved(location)
             }
@@ -154,27 +138,11 @@ internal class EasyLocationManager(
         }
     }
 
-    /**
-     * Starts a timer to stop the request of the location updates after [mLocationRequestTimeout] seconds.
-     */
-    private fun startLocationRequestTimer() {
-        mLocationRequestTimeoutHandler.postDelayed(timeoutRunnable, mLocationRequestTimeout)
-    }
-
-    /**
-     * Restarts the location timer [timeoutRunnable]
-     */
-    private fun restartTimer() {
-        mLocationRequestTimeoutHandler.removeCallbacks(timeoutRunnable)
-        mLocationRequestTimeoutHandler.postDelayed(timeoutRunnable, mLocationRequestTimeout)
-    }
-
-    private val timeoutRunnable: Runnable = Runnable {
+    private fun onTimeout(): Runnable = Runnable {
         stopLocationUpdates()
         if (::mLocationResultListener.isInitialized)
             mLocationResultListener.onLocationRetrievalError(
                 LocationResult.Error(LocationResultError.TimeoutError())
             )
     }
-
 }

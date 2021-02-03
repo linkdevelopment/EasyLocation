@@ -17,11 +17,14 @@ package com.linkdev.easylocation
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.location.Location
 import androidx.annotation.RequiresPermission
 import com.linkdev.easylocation.core.bases.BaseLocationPermissionsFragment
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
 import com.linkdev.easylocation.core.models.*
+import com.linkdev.easylocation.core.models.EasyLocationConstants
+import com.linkdev.easylocation.core.utils.EasyLocationNotification
 import kotlin.properties.Delegates
 
 /**
@@ -37,12 +40,14 @@ import kotlin.properties.Delegates
  */
 abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
 
-    private var mFetchLastKnownLocation: Boolean = false
     private lateinit var mEasyLocation: EasyLocation
-
     private lateinit var mLocationOptions: LocationOptions
+
     private var mLocationRequestType by Delegates.notNull<LocationRequestType>()
     private var mLocationRequestTimeout by Delegates.notNull<Long>()
+
+    private var mNotification: Notification? = null
+    private var mNotificationID: Int = EasyLocationNotification.NOTIFICATION_ID
 
     /**
      * Called when both LocationPermission and locationSetting are granted.
@@ -70,6 +75,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
      *      + [TimeFusedLocationOptions]
      *
      * @param locationRequestType true to emit the location only once.
+     *
      * @param locationRequestTimeout Sets the max location updates request time
      *      if exceeded stops the location updates and returns error <P>
      *      @Default{#LocationLifecycleObserver.DEFAULT_MAX_LOCATION_REQUEST_TIME}.
@@ -77,14 +83,18 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     protected fun getLocation(
         locationOptions: LocationOptions,
         locationRequestType: LocationRequestType = LocationRequestType.UPDATES,
-        locationRequestTimeout: Long = 50000,
+        locationRequestTimeout: Long = EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT,
+        notification: Notification? = null,
+        notificationID: Int = EasyLocationNotification.NOTIFICATION_ID,
         rationaleDialogMessage: String = getString(R.string.easy_location_rationale_message)
     ) {
         mLocationOptions = locationOptions
         mLocationRequestType = locationRequestType
         mLocationRequestTimeout = locationRequestTimeout
+        mNotification = notification
+        mNotificationID = notificationID
 
-        checkLocationPermissions(activity, rationaleDialogMessage)
+        checkLocationPermissions(requireActivity(), rationaleDialogMessage)
     }
 
     @SuppressLint("MissingPermission")
@@ -98,11 +108,14 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun getLocation() {
-        mEasyLocation = EasyLocation.Builder(context!!, mLocationOptions)
+        val builder = EasyLocation.Builder(context!!, mLocationOptions)
             .setLocationRequestTimeout(mLocationRequestTimeout)
             .setLocationRequestType(mLocationRequestType)
-            .build()
 
+        if (mNotification != null)
+            builder.setCustomNotification(mNotificationID, mNotification!!)
+
+        mEasyLocation = builder.build()
         mEasyLocation.requestLocationUpdates(lifecycle)
             .observe(this, this::onLocationStatusRetrieved)
     }

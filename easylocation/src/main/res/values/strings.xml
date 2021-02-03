@@ -3,4 +3,8 @@
     <string name="easy_location_rationale_message">Location permission is required to be able to use this feature</string>
     <string name="easy_location_cancel">Cancel</string>
     <string name="easy_location_continue">Continue</string>
+    <string name="notificationTitle">Easy location Foreground Service</string>
+    <string name="notificationMessage">Location updates are running in the background</string>
+    <string name="notificationChannel">Location Channel</string>
+    <string name="locationNotificationChannel">Location Notification Channel</string>
 </resources>
