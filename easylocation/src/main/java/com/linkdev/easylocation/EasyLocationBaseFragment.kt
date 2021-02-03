@@ -22,10 +22,8 @@ import android.location.Location
 import androidx.annotation.RequiresPermission
 import com.linkdev.easylocation.core.bases.BaseLocationPermissionsFragment
 import com.linkdev.easylocation.core.location_providers.fused.options.LocationOptions
-import com.linkdev.easylocation.core.models.LocationRequestType
-import com.linkdev.easylocation.core.models.LocationResult
-import com.linkdev.easylocation.core.models.LocationResultError
-import com.linkdev.easylocation.core.models.Status
+import com.linkdev.easylocation.core.models.*
+import com.linkdev.easylocation.core.models.EasyLocationConstants
 import com.linkdev.easylocation.core.utils.EasyLocationNotification
 import kotlin.properties.Delegates
 
@@ -85,7 +83,7 @@ abstract class EasyLocationBaseFragment : BaseLocationPermissionsFragment() {
     protected fun getLocation(
         locationOptions: LocationOptions,
         locationRequestType: LocationRequestType = LocationRequestType.UPDATES,
-        locationRequestTimeout: Long = 50000,
+        locationRequestTimeout: Long = EasyLocationConstants.DEFAULT_LOCATION_REQUEST_TIMEOUT,
         notification: Notification? = null,
         notificationID: Int = EasyLocationNotification.NOTIFICATION_ID,
         rationaleDialogMessage: String = getString(R.string.easy_location_rationale_message)
