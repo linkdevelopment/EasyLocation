@@ -1,6 +1,29 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+ext {
+    bintrayRepo = "EasyLocation"
+    bintrayName = "com.linkdev.easylocation"
+    libraryName = "easylocation"
+    libraryDescription = 'Working with location is one of the most common tasks in the development process of mobile apps. Therefore, questions about what to use to achieve more precise results, maximum stability in operation and simplicity of implementation frequently arise during the development.'
+
+    publishedGroupId = 'com.linkdev.easylocation'
+    artifact = 'easylocation'
+    libraryVersion = '1.0.0'
+
+    siteUrl = 'https://github.com/linkdevelopment/EasyLocation_Android'
+    gitUrl = 'https://github.com/linkdevelopment/EasyLocation_Android.git'
+
+    developerId = 'linkdev-libraries'
+    developerName = 'Link Development'
+    developerEmail = 'linkdev.libraries@gmail.com'
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
 
 android {
     compileSdkVersion 30
@@ -9,7 +32,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -39,4 +62,9 @@ dependencies {
 
     //location
     implementation 'com.google.android.gms:play-services-location:17.1.0'
+}
+
+if (project.rootProject.file('local.properties').exists()) {
+    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 }
